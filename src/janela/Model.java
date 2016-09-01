@@ -12,7 +12,7 @@ public class Model {
     public static final int DIRETORIO = 1;
     public static final int ARQUIVO = 2;
 
-    Exame exame;
+    private final Exame exame;
 
     public Model(int tipo, String localizacao) throws Exception {
 
@@ -37,23 +37,23 @@ public class Model {
         return exame.getNumeroFatias();
     }
 
-    boolean[][] getMatrizPulmaoEsq(int indice){
+    boolean[][] getMatrizPulmaoEsq(int indice) {
         return exame.getFatia(indice).getPulmaoEsq();
     }
 
     int getTamanhoPulmaoEsq(int indice) {
         return exame.getFatia(indice).getTamanhoPulmaoEsq();
     }
-    
-    boolean[][] getMatrizPulmaoDir(int indice){
+
+    boolean[][] getMatrizPulmaoDir(int indice) {
         return exame.getFatia(indice).getPulmaoDir();
     }
 
     int getTamanhoPulmaoDir(int indice) {
         return exame.getFatia(indice).getTamanhoPulmaoDir();
     }
-    
-    int[][] getMatrizOriginal(int indice){
+
+    int[][] getMatrizOriginal(int indice) {
         return exame.getFatia(indice).getMatrizCoeficientes();
     }
 

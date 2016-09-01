@@ -1,7 +1,6 @@
 package processamento;
 
 import dados.Exame;
-import testes.VisualizaImagem;
 
 /**
  *

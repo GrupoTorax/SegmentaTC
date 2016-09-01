@@ -36,8 +36,8 @@ public class BinaryLabeling {
         }
         return tamanhoTotal;
     }
-    
-    public boolean[][] getMatrizBinLabel (int label) {
+
+    public boolean[][] getMatrizBinLabel(int label) {
         boolean[][] matrizLabel = new boolean[labelledMatrix.length][labelledMatrix[0].length];
         label++;
         for (int y = 0; y < labelledMatrix[0].length; y++) {
@@ -45,19 +45,16 @@ public class BinaryLabeling {
                 if (labelledMatrix[x][y] == label) {
                     matrizLabel[x][y] = true;
                 } else {
-                    matrizLabel[x][y] = false;                    
+                    matrizLabel[x][y] = false;
                 }
             }
         }
         return matrizLabel;
     }
-    
+
     public BinaryLabeling(int[][] mtzTrabalho) {
-
         labelledMatrix = Utils.copyArray(mtzTrabalho);
-
         int m = 2;
-
         for (int x = 1; x < (labelledMatrix.length - 1); x++) {
             for (int y = 1; y < (labelledMatrix[x].length - 1); y++) {
                 if (labelledMatrix[x][y] == 1) {
@@ -65,19 +62,15 @@ public class BinaryLabeling {
                 }
             }
         }
-
         total = m - 2;
-        
     }
 
     /*
         ATENÇÃO!!!
         Foi necessário acrescentar o parâmetro -Xss10m para aumentar o CallStack da JVM!
         Sem isso a recursividade abaixo vai causar erro na execução!
-    */
-    
+     */
     // ATENÇÃO 2: O trecho comentado abaixo faz com que o algoritmo trabalhe somente em 4 direções, e não em 8 (sem as diagonais)
-
     private void compLabel(int i, int j, int m) {
         if (labelledMatrix[i][j] == 1) {
             labelledMatrix[i][j] = m;

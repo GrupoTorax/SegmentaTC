@@ -14,13 +14,11 @@ import utils.Utils;
 public class Threshold {
 
     public int[][] aplicaBinThreshold(int[][] mtzTrabalho, int limiar, int valorAbaixo, int valorAcima) {
-        
         int[][] matriz = Utils.copyArray(mtzTrabalho);
-                
         for (int x = 0; x < matriz.length; x++) {
             for (int y = 0; y < matriz[x].length; y++) {
-                if (matriz[x][y] >= limiar){
-                    matriz[x][y] = valorAcima;                    
+                if (matriz[x][y] >= limiar) {
+                    matriz[x][y] = valorAcima;
                 } else {
                     matriz[x][y] = valorAbaixo;
                 }

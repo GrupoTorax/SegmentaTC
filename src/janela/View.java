@@ -59,12 +59,12 @@ public class View {
     JLabel labelNomeArquivo;
     JLabel labelIndiceImagem;
     JLabel espessuraFatia;
-    JLabel labelCoordenadas; 
-    JLabel labelHU; 
-    JLabel labelRGB; 
-    JLabel tamPulmaoEsquerdo; 
-    JLabel tamPulmaoDireito; 
-    
+    JLabel labelCoordenadas;
+    JLabel labelHU;
+    JLabel labelRGB;
+    JLabel tamPulmaoEsquerdo;
+    JLabel tamPulmaoDireito;
+
     public View(Controller controle) {
         this.controle = controle;
     }
@@ -151,7 +151,7 @@ public class View {
             controle.salvarFatia();
         });
         menuArquivo.add(submenuSalvarF);
-        
+
         JMenuItem submenuSalvarE = new JMenuItem("Salvar exame");
         submenuSalvarE.addActionListener((ActionEvent e) -> {
             if (!controle.temExameCarregado()) {
@@ -162,8 +162,7 @@ public class View {
             controle.salvarExame();
         });
         menuArquivo.add(submenuSalvarE);
-        
-        
+
         JMenuItem submenuSair = new JMenuItem("Sair");
         submenuSair.addActionListener((ActionEvent e) -> {
             janela.dispose();
@@ -173,12 +172,12 @@ public class View {
         menu.add(menuSobre);
         JMenuItem submenuSobre = new JMenuItem("Sobre");
         submenuSobre.addActionListener((ActionEvent e) -> {
-            JOptionPane.showMessageDialog(null,"Universidade Feevale\n\n" + 
-                                               "Ciência da Computação\n\n" + 
-                                               "Trabalho de Conclusão de Curso\n\n" + 
-                                               "Aluno: Rodrigo Freiberger Rönnau\n\n" + 
-                                               "Orientadora: Marta Rosecler Bez\n\n" + 
-                                               "Coorientador: Jéferson Cristiano Flores", "Sobre",JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Universidade Feevale\n\n"
+                    + "Ciência da Computação\n\n"
+                    + "Trabalho de Conclusão de Curso\n\n"
+                    + "Aluno: Rodrigo Freiberger Rönnau\n\n"
+                    + "Orientadora: Marta Rosecler Bez\n\n"
+                    + "Coorientador: Jéferson Cristiano Flores", "Sobre", JOptionPane.INFORMATION_MESSAGE);
         });
         menuSobre.add(submenuSobre);
         janela.setJMenuBar(menu);
@@ -193,6 +192,7 @@ public class View {
             @Override
             public void focusGained(FocusEvent e) {
             }
+
             @Override
             public void focusLost(FocusEvent e) {
                 atualizaImagem();
@@ -203,7 +203,7 @@ public class View {
         ActionListener listenerCheckBoxes = (ActionEvent e) -> {
             atualizaImagem();
         };
-        
+
         segPulmaoEsq = new JCheckBox("Pulmão esquerdo");
         segPulmaoEsq.addActionListener(listenerCheckBoxes);
         painelRodape.add(segPulmaoEsq);
@@ -214,6 +214,7 @@ public class View {
             @Override
             public void focusGained(FocusEvent e) {
             }
+
             @Override
             public void focusLost(FocusEvent e) {
                 atualizaImagem();
@@ -224,7 +225,7 @@ public class View {
         segPulmaoDir = new JCheckBox("Pulmão direito");
         segPulmaoDir.addActionListener(listenerCheckBoxes);
         painelRodape.add(segPulmaoDir);
-        
+
         painelRodape.add(new JLabel("Templates"));
         templateWLWW = new JComboBox();
         templateWLWW.addItem(LITERAL_OSSOS);
@@ -251,28 +252,28 @@ public class View {
         sPainelInfo.setViewportView(painelInfo);
 
         painelInfo.add(new JLabel("                 INFORMAÇÕES                 "));
-        
+
         labelNomeArquivo = new JLabel();
         painelInfo.add(labelNomeArquivo);
 
         labelIndiceImagem = new JLabel();
         painelInfo.add(labelIndiceImagem);
-        
+
         espessuraFatia = new JLabel();
         painelInfo.add(espessuraFatia);
-        
+
         labelCoordenadas = new JLabel();
         painelInfo.add(labelCoordenadas);
-        
+
         labelHU = new JLabel();
         painelInfo.add(labelHU);
-        
+
         labelRGB = new JLabel();
         painelInfo.add(labelRGB);
-        
+
         tamPulmaoEsquerdo = new JLabel();
         painelInfo.add(tamPulmaoEsquerdo);
-        
+
         tamPulmaoDireito = new JLabel();
         painelInfo.add(tamPulmaoDireito);
 
@@ -286,24 +287,23 @@ public class View {
             labelRGB.setText("");
             return;
         }
-        
+
         //atualiza as infromações do pixel selecionado
         labelCoordenadas.setText("  Coordenadas: " + x + ", " + y);
         //MELHORAR ESTE PONTO, A FORMA COMO OBTEM OS DADOS!
         labelHU.setText("  Valor em HU: " + controle.dados.getMatrizOriginal(getValorSlider())[x][y]);
 
         BufferedImage imagem = new BufferedImage(sliceCorrente.getIcon().getIconWidth(),
-                                                sliceCorrente.getIcon().getIconHeight(),
-                                                BufferedImage.TYPE_INT_RGB);
+                sliceCorrente.getIcon().getIconHeight(),
+                BufferedImage.TYPE_INT_RGB);
 
         sliceCorrente.getIcon().paintIcon(null, imagem.getGraphics(), 0, 0);
 
         Color c = new Color(imagem.getRGB(x, y));
 
-        labelRGB.setText("  Valor RGB: " + c.getRed() + ", " + c.getGreen() + ", " + c.getBlue() );
-        
-    }
+        labelRGB.setText("  Valor RGB: " + c.getRed() + ", " + c.getGreen() + ", " + c.getBlue());
 
+    }
 
     private void trataTrocaTemplateWLWW() {
         String opcaoSelecionada = (String) templateWLWW.getSelectedItem();
@@ -326,13 +326,13 @@ public class View {
     void atualizaImagem() {
         BufferedImage imagem = controle.geraImagem();
         sliceCorrente.setIcon(new ImageIcon(imagem));
-        
+
         labelNomeArquivo.setText("  Arquivo: " + controle.dados.getNomeArquivo(getValorSlider()));
         labelIndiceImagem.setText("  Fatia: " + (getValorSlider() + 1) + " / " + controle.dados.getNumeroFatias());
         espessuraFatia.setText("  Espessura: " + controle.dados.getEspessuraFatia(getValorSlider()) + " mm");
         tamPulmaoEsquerdo.setText("  Pulmão esquerdo: " + controle.dados.getTamanhoPulmaoEsq(getValorSlider()) + " pixels");
         tamPulmaoDireito.setText("  Pulmão direito: " + controle.dados.getTamanhoPulmaoDir(getValorSlider()) + " pixels");
-        
+
     }
 
     int getValorSlider() {
@@ -345,16 +345,16 @@ public class View {
 
     int getWL() {
         return Integer.parseInt(windowLevel.getText());
-    }    
-    
+    }
+
     boolean isSegPulmaoEsqMarcado() {
         return segPulmaoEsq.isSelected();
     }
-    
+
     boolean isSegPulmaoDirMarcado() {
         return segPulmaoDir.isSelected();
     }
-           
+
     void limitaSlider(int numeroFatias) {
         slider.setMaximum(numeroFatias - 1);
     }

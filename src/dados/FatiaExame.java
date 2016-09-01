@@ -29,16 +29,14 @@ public class FatiaExame {
 
     public void setMatrizPulmaoEsq(boolean[][] matrizPulmaoEsq) {
         this.matrizPulmaoEsq = matrizPulmaoEsq;
-        
         tamanhoPulmaoEsq = 0;
         for (int i = 0; i < matrizPulmaoEsq.length; i++) {
             for (int j = 0; j < matrizPulmaoEsq[i].length; j++) {
-                if (matrizPulmaoEsq[i][j]){
+                if (matrizPulmaoEsq[i][j]) {
                     tamanhoPulmaoEsq++;
                 }
             }
         }
-        
     }
 
     public boolean[][] getPulmaoEsq() {
@@ -48,29 +46,27 @@ public class FatiaExame {
     public int getTamanhoPulmaoEsq() {
         return tamanhoPulmaoEsq;
     }
-    
+
     public void setMatrizPulmaoDir(boolean[][] matrizPulmaoDir) {
         this.matrizPulmaoDir = matrizPulmaoDir;
-        
         tamanhoPulmaoDir = 0;
         for (int i = 0; i < matrizPulmaoDir.length; i++) {
             for (int j = 0; j < matrizPulmaoDir[i].length; j++) {
-                if (matrizPulmaoDir[i][j]){
+                if (matrizPulmaoDir[i][j]) {
                     tamanhoPulmaoDir++;
                 }
             }
         }
-        
     }
 
     public boolean[][] getPulmaoDir() {
         return matrizPulmaoDir;
     }
-    
+
     public int getTamanhoPulmaoDir() {
         return tamanhoPulmaoDir;
     }
-    
+
     public void setSliceThickness(float sliceThickness) {
         this.sliceThickness = sliceThickness;
     }
@@ -121,8 +117,8 @@ public class FatiaExame {
 
     public void setPadValue(int padValue) {
         this.padValue = padValue;
-    }    
-    
+    }
+
     public int getPadValue() {
         return padValue;
     }

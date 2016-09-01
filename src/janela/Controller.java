@@ -102,7 +102,7 @@ public class Controller {
             }
         }
     }
-    
+
     void salvarExame() {
         selecaoDirArq.setDialogTitle("Selecione o diretório onde serão gravadas as imagens do exame");
         selecaoDirArq.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
@@ -146,11 +146,11 @@ public class Controller {
 
         return imagem;
     }
-    
+
     private void pintaImagem(BufferedImage imagem, boolean[][] matrizOrgao, Color cor) {
         for (int ix = 0; ix < matrizOrgao.length; ix++) {
             for (int iy = 0; iy < matrizOrgao[0].length; iy++) {
-                if(matrizOrgao[ix][iy]) {
+                if (matrizOrgao[ix][iy]) {
                     imagem.setRGB(ix, iy, cor.getRGB());
                 }
             }

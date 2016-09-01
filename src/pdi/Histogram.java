@@ -16,16 +16,14 @@ public class Histogram {
 
     public Histogram(int[][] mtzTrabalho, int limiteInferior, int limiteSuperior) {
         histograma = new int[limiteSuperior - limiteInferior + 1];
-
-        if (limiteInferior < 0){
+        if (limiteInferior < 0) {
             offset = limiteInferior * -1;
         } else {
             offset = limiteInferior;
         }
-
         for (int x = 0; x < mtzTrabalho.length; x++) {
             for (int y = 0; y < mtzTrabalho[x].length; y++) {
-                if( mtzTrabalho[x][y] < limiteInferior || mtzTrabalho[x][y] > limiteSuperior){
+                if (mtzTrabalho[x][y] < limiteInferior || mtzTrabalho[x][y] > limiteSuperior) {
                     continue;
                 }
                 histograma[mtzTrabalho[x][y] + offset]++;
@@ -36,27 +34,27 @@ public class Histogram {
     public int getMaxOcorrencias(int limiteInferior, int limiteSuperior) {
         int maxOcorrencias = limiteInferior;
         for (int i = 0; i < histograma.length; i++) {
-            if( i - offset < limiteInferior || i - offset > limiteSuperior || i == 0){
+            if (i - offset < limiteInferior || i - offset > limiteSuperior || i == 0) {
                 continue;
             }
-            if (histograma[i] > histograma[maxOcorrencias + offset]){
+            if (histograma[i] > histograma[maxOcorrencias + offset]) {
                 maxOcorrencias = i - offset;
             }
-        }        
+        }
         return maxOcorrencias;
     }
-    
+
     public int getLocalMinima(int limiteInferior, int limiteSuperior) {
         int localMinima = limiteInferior;
         for (int i = 0; i < histograma.length; i++) {
-            if( i - offset < limiteInferior || i - offset > limiteSuperior || i == 0){
+            if (i - offset < limiteInferior || i - offset > limiteSuperior || i == 0) {
                 continue;
             }
-            if (histograma[i] < histograma[localMinima + offset]){
+            if (histograma[i] < histograma[localMinima + offset]) {
                 localMinima = i - offset;
             }
-        }        
+        }
         return localMinima;
     }
-    
+
 }

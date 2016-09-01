@@ -38,7 +38,6 @@ class SegmentaPulmoes {
 
         //JOptionPane.showMessageDialog(null,"Matriz de Coeficientes");
         //new VisualizaImagem(indiceFatia, exame, mtzTrabalho, -400, 1500);
-
         //converte qualquer valor fora da faixa de valores válidos para um valor conhecido de background
         for (int y = 0; y < mtzTrabalho[0].length; y++) {
             for (int x = 0; x < mtzTrabalho.length; x++) {
@@ -50,15 +49,13 @@ class SegmentaPulmoes {
 
         //JOptionPane.showMessageDialog(null,"Conversão de valores inválidos");
         //new VisualizaImagem(indiceFatia, exame, mtzTrabalho, -400, 1500);
-
         //se a espessura da fatia for menor que 5mm
-         if (exame.getFatia(indiceFatia).getSliceThickness() <= 5){
-             mtzTrabalho = aplicaGauss(mtzTrabalho);
+        if (exame.getFatia(indiceFatia).getSliceThickness() <= 5) {
+            mtzTrabalho = aplicaGauss(mtzTrabalho);
 
             //JOptionPane.showMessageDialog(null,"Aplicação de Gauss");
             //new VisualizaImagem(indiceFatia, exame, mtzTrabalho, -400, 1500);
-             
-         }
+        }
 
         //faz o scan da esquerda para a direita
         for (int y = 0; y < mtzTrabalho[0].length; y++) {
@@ -72,7 +69,6 @@ class SegmentaPulmoes {
 
         //JOptionPane.showMessageDialog(null,"Scan esquerda para esquerda");
         //new VisualizaImagem(indiceFatia, exame, mtzTrabalho, -400, 1500);
-
         //faz o scan da direita para a esquerda
         for (int y = 0; y < mtzTrabalho[0].length; y++) {
             for (int x = (mtzTrabalho.length - 1); x > -1; x--) {
@@ -85,7 +81,6 @@ class SegmentaPulmoes {
 
         //JOptionPane.showMessageDialog(null,"Scan direita para esquerda");
         //new VisualizaImagem(indiceFatia, exame, mtzTrabalho, -400, 1500);
-
         //faz o scan de cima para baixo
         for (int x = 0; x < mtzTrabalho.length; x++) {
             for (int y = 0; y < mtzTrabalho[0].length; y++) {
@@ -98,7 +93,6 @@ class SegmentaPulmoes {
 
         //JOptionPane.showMessageDialog(null,"Scan de cima para baixo");
         //new VisualizaImagem(indiceFatia, exame, mtzTrabalho, -400, 1500);
-
         //faz o scan de baixo para cima
         for (int x = 0; x < mtzTrabalho.length; x++) {
             for (int y = (mtzTrabalho[0].length - 1); y > -1; y--) {
@@ -111,16 +105,14 @@ class SegmentaPulmoes {
 
         //JOptionPane.showMessageDialog(null,"Scan de baixo para cima");
         //new VisualizaImagem(indiceFatia, exame, mtzTrabalho, -400, 1500);
-
         Histogram hs = new Histogram(mtzTrabalho, -1000, -200);
         int limiar = hs.getLocalMinima(hs.getMaxOcorrencias(-1000, -201), -200);
-        
+
         //converte a matriz para tons de cinza
         mtzTrabalho = new Threshold().aplicaBinThreshold(mtzTrabalho, limiar, 255, 0);
 
         //JOptionPane.showMessageDialog(null,"Binarização com limiar = " + limiar);
         //new VisualizaImagem(mtzTrabalho);
-
         //retira a mesa do tomógrafo, se existente
         boolean vazio = false;
         for (int y = (mtzTrabalho[0].length / 2); y < mtzTrabalho[0].length; y++) {
@@ -143,7 +135,6 @@ class SegmentaPulmoes {
 
         //JOptionPane.showMessageDialog(null,"Remoção da mesa do tomógrafo");
         //new VisualizaImagem(mtzTrabalho);
-
         //converte a matriz para binário (necessário para o labeling)
         mtzTrabalho = new Threshold().aplicaBinThreshold(mtzTrabalho, 100, 0, 1);
 
@@ -153,7 +144,7 @@ class SegmentaPulmoes {
         buscaDoisMaiores(lbl);
 
         //verifica se os pulmões estão conectados, sendo reconhecidos como somente 1 objeto
-        if(verificaConectados(lbl.getMatrizBinLabel(labelMaior1), maior1)){
+        if (verificaConectados(lbl.getMatrizBinLabel(labelMaior1), maior1)) {
             System.out.println("Conectados! Fatia: " + (indiceFatia + 1));
 
             //separa os pulmões (altera mtzTrabalho, separando os pulmões
@@ -166,7 +157,6 @@ class SegmentaPulmoes {
         }
 
         //lbl = preencheCavidades(lbl);
-
         //verifica qual dos dois objetos começa mais a esquerda
         //ATENÇÃO, a matriz retornada abaixo não está com o "offset" de objetos, por isso é necessário acrescentar 1 na comparação, mas não no get da matriz booleana!
         mtzTrabalho = lbl.getLabelledMatrix();
@@ -201,16 +191,16 @@ class SegmentaPulmoes {
     private boolean verificaConectados(boolean[][] matrizBinLabel, int maior) {
         int tamEsquerda = 0;
         int tamDireita = 0;
-        
+
         for (int y = 0; y < mtzTrabalho[0].length; y++) {
             for (int x = 0; x < (mtzTrabalho.length / 2); x++) {
-                if(matrizBinLabel[x][y]){
+                if (matrizBinLabel[x][y]) {
                     tamEsquerda++;
                 }
             }
 
             for (int x = (mtzTrabalho.length / 2); x < mtzTrabalho.length; x++) {
-                if(matrizBinLabel[x][y]){
+                if (matrizBinLabel[x][y]) {
                     tamDireita++;
                 }
             }
@@ -230,9 +220,9 @@ class SegmentaPulmoes {
         for (int x = 1; x < mtzTemp.length - 1; x++) {
             for (int y = 1; y < mtzTemp[0].length - 1; y++) {
                 //inverte os objetos pelo fundo
-                if(mtzObj1[x][y]||mtzObj2[x][y]){
-                    mtzTemp[x][y] = 0;    
-                } else {              
+                if (mtzObj1[x][y] || mtzObj2[x][y]) {
+                    mtzTemp[x][y] = 0;
+                } else {
                     mtzTemp[x][y] = 1;
                 }
             }
@@ -247,7 +237,7 @@ class SegmentaPulmoes {
                 boolean[][] mtzAux = lbl.getMatrizBinLabel(i);
                 for (int x = 0; x < mtzAux.length; x++) {
                     for (int y = 0; y < mtzAux[0].length; y++) {
-                        if(mtzAux[x][y]){
+                        if (mtzAux[x][y]) {
                             mtzTrabalho[x][y] = 1;
                         }
                     }
@@ -277,11 +267,9 @@ class SegmentaPulmoes {
                 labelMaior2 = labelMaior1;
                 maior1 = tamanho;
                 labelMaior1 = i;
-            } else {
-                if (tamanho > maior2) {
-                    maior2 = tamanho;
-                    labelMaior2 = i;
-                }
+            } else if (tamanho > maior2) {
+                maior2 = tamanho;
+                labelMaior2 = i;
             }
         }
     }
