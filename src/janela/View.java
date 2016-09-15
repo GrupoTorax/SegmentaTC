@@ -140,29 +140,33 @@ public class View {
             controle.selecionarDirArq(Controller.ARQUIVO);
         });
         menuArquivo.add(submenuSelecionarArquivo);
-
         JMenuItem submenuSalvarF = new JMenuItem("Salvar fatia");
         submenuSalvarF.addActionListener((ActionEvent e) -> {
             if (!controle.temExameCarregado()) {
                 JOptionPane.showMessageDialog(null, "Não há nenhum exame carregado.");
                 return;
             }
-
             controle.salvarFatia();
         });
         menuArquivo.add(submenuSalvarF);
-
         JMenuItem submenuSalvarE = new JMenuItem("Salvar exame");
         submenuSalvarE.addActionListener((ActionEvent e) -> {
             if (!controle.temExameCarregado()) {
                 JOptionPane.showMessageDialog(null, "Não há nenhum exame carregado.");
                 return;
             }
-
             controle.salvarExame();
         });
         menuArquivo.add(submenuSalvarE);
-
+        JMenuItem comparaExame = new JMenuItem("Comparar exame");
+        comparaExame.addActionListener((ActionEvent e) -> {
+            if (!controle.temExameCarregado()) {
+                JOptionPane.showMessageDialog(null, "Não há nenhum exame carregado.");
+                return;
+            }
+            controle.comparaExame();
+        });
+        menuArquivo.add(comparaExame);
         JMenuItem submenuSair = new JMenuItem("Sair");
         submenuSair.addActionListener((ActionEvent e) -> {
             janela.dispose();

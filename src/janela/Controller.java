@@ -37,6 +37,7 @@ public class Controller {
 
         janela = new View(this);
         janela.exibe();
+        load(new File(getClass().getResource("/diacon").getFile()), DIRETORIO);
     }
 
     public boolean temExameCarregado() {
@@ -47,41 +48,37 @@ public class Controller {
         if (ultimoDiretorio != null) {
             selecaoDirArq.setCurrentDirectory(ultimoDiretorio);
         }
-
-        int tipoModel;
-
         if (tipo == DIRETORIO) {
-            tipoModel = Model.DIRETORIO;
-
             selecaoDirArq.setDialogTitle("Selecione o diretório onde estão os arquivos DICOM");
             selecaoDirArq.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
         } else {
-            tipoModel = Model.ARQUIVO;
-
             selecaoDirArq.setDialogTitle("Selecione o arquivo DICOM");
             selecaoDirArq.setFileFilter(filtroArquivosDcm);
             selecaoDirArq.setFileSelectionMode(JFileChooser.FILES_ONLY);
         }
-
         if (selecaoDirArq.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
-            final File itemSelecionado = selecaoDirArq.getSelectedFile();
-
-            try {
-                dados = new Model(tipoModel, itemSelecionado.getAbsolutePath());
-                janela.limitaSlider(dados.getNumeroFatias());
-                janela.atualizaImagem();
-
-                if (tipo == DIRETORIO) {
-                    ultimoDiretorio = itemSelecionado;
-                    ultimoArquivo = null;
-                } else {
-                    ultimoDiretorio = new File(itemSelecionado.getParent());
-                    ultimoArquivo = itemSelecionado;
-                }
-            } catch (Exception ex) {
-                Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
-            }
+            load(selecaoDirArq.getSelectedFile(), tipo);
         }
+    }
+
+    private void load(File path, int tipo) {
+        final File itemSelecionado = path;
+        try {
+            dados = new Model(tipo, itemSelecionado.getAbsolutePath());
+            janela.limitaSlider(dados.getNumeroFatias());
+            janela.atualizaImagem();
+
+            if (tipo == DIRETORIO) {
+                ultimoDiretorio = itemSelecionado;
+                ultimoArquivo = null;
+            } else {
+                ultimoDiretorio = new File(itemSelecionado.getParent());
+                ultimoArquivo = itemSelecionado;
+            }
+        } catch (Exception ex) {
+            Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
     }
 
     void salvarFatia() {
@@ -90,10 +87,8 @@ public class Controller {
         selecaoDirArq.setCurrentDirectory(ultimoDiretorio);
         selecaoDirArq.setFileFilter(filtroArquivosBmp);
         selecaoDirArq.setSelectedFile(new File(getNomeArquivoBmp(janela.getValorSlider())));
-
         if (selecaoDirArq.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
             final BufferedImage imagem = geraImagem();
-
             try {
                 ImageIO.write(imagem, "bmp", selecaoDirArq.getSelectedFile());
                 JOptionPane.showMessageDialog(null, "Arquivo '" + selecaoDirArq.getSelectedFile().getName() + "' salvo com sucesso.");
@@ -106,18 +101,53 @@ public class Controller {
     void salvarExame() {
         selecaoDirArq.setDialogTitle("Selecione o diretório onde serão gravadas as imagens do exame");
         selecaoDirArq.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-
         if (selecaoDirArq.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
             try {
                 for (int fatia = 0; fatia < dados.getNumeroFatias(); fatia++) {
                     final File fatiaExame = new File(selecaoDirArq.getSelectedFile(), getNomeArquivoBmp(fatia));
                     ImageIO.write(geraImagem(fatia), "bmp", fatiaExame);
                 }
-
                 JOptionPane.showMessageDialog(null, "Exame salvo com sucesso.");
             } catch (IOException ex) {
                 JOptionPane.showMessageDialog(null, "Ocorreu um erro ao salvar o exame.");
             }
+        }
+    }
+
+    public void comparaExame() {
+        String path = getClass().getResource("/gabarito").getFile();
+        try {
+            boolean sucesso = true;
+            for (int fatia = 0; fatia < dados.getNumeroFatias(); fatia++) {
+                StringBuilder sb = new StringBuilder("Fatia: ");
+                sb.append(fatia);
+                try {
+                    String nome = path + "/" + getNomeArquivoBmp(fatia);
+                    BufferedImage image = geraImagemComparacao(fatia);
+                    BufferedImage gabarito = ImageIO.read(new File(nome));
+                    for (int x = 0; x < image.getWidth(); x++) {
+                        for (int y = 0; y < image.getHeight(); y++) {
+                            if (image.getRGB(x, y) != gabarito.getRGB(x, y)) {
+                                throw new Exception("Pixel: " + image.getRGB(x, y)
+                                        + " Gabarito: " + gabarito.getRGB(x, y)
+                                        + " x: " + x + " y:" + y);
+                            }
+                        }
+                    }
+                    sb.append(" sucesso!");
+                } catch (Exception e) {
+                    sb.append(" Erro! ").append(e.getMessage());
+                    sucesso = false;
+                }
+                System.out.println(sb);
+            }
+            if (sucesso) {
+                JOptionPane.showMessageDialog(null, "Comparação realizada com sucesso!");
+            } else {
+                JOptionPane.showMessageDialog(null, "Comparação realizada com inconsistências!");
+            }
+        } catch (Exception e) {
+            System.out.println(e);
         }
     }
 
@@ -126,9 +156,26 @@ public class Controller {
     }
 
     BufferedImage geraImagem(final int fatia) {
+        BufferedImage imagem = geraImagemDados(fatia);
+        if (janela.isSegPulmaoEsqMarcado()) {
+            pintaImagem(imagem, dados.getMatrizPulmaoEsq(fatia), Color.yellow);
+        }
+        if (janela.isSegPulmaoDirMarcado()) {
+            pintaImagem(imagem, dados.getMatrizPulmaoDir(fatia), Color.green);
+        }
+        return imagem;
+    }
+
+    BufferedImage geraImagemComparacao(final int fatia) {
+        BufferedImage imagem = geraImagemDados(fatia);
+        pintaImagem(imagem, dados.getMatrizPulmaoEsq(fatia), Color.yellow);
+        pintaImagem(imagem, dados.getMatrizPulmaoDir(fatia), Color.green);
+        return imagem;
+    }
+
+    BufferedImage geraImagemDados(final int fatia) {
         BufferedImage imagemOriginal = dados.getImagemFatia(fatia, janela.getWL(), janela.getWW());
         BufferedImage imagem = new BufferedImage(imagemOriginal.getWidth(), imagemOriginal.getHeight(), BufferedImage.TYPE_INT_RGB);
-
         // Faz uma cópia da imagem original pixel a pixel pelo RGB
         for (int ix = 0; ix < imagem.getWidth(); ix++) {
             for (int iy = 0; iy < imagem.getHeight(); iy++) {
@@ -136,14 +183,6 @@ public class Controller {
                 imagem.setRGB(ix, iy, rgbOriginal);
             }
         }
-
-        if (janela.isSegPulmaoEsqMarcado()) {
-            pintaImagem(imagem, dados.getMatrizPulmaoEsq(fatia), Color.yellow);
-        }
-        if (janela.isSegPulmaoDirMarcado()) {
-            pintaImagem(imagem, dados.getMatrizPulmaoDir(fatia), Color.green);
-        }
-
         return imagem;
     }
 
