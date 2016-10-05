@@ -88,7 +88,7 @@ class SegmentaPulmoes {
         Image image = ImageHelper.create(mtzTrabalho, new Range<>(255, 0));
         ThresholdProcess process = new ThresholdProcess(image, limiar);
         process.process();
-        mtzTrabalho = ImageHelper.getData(process.getOutputImage());
+        mtzTrabalho = ImageHelper.getData(process.getOutput());
         // Retira a mesa do tomógrafo, se existente
         boolean vazio = false;
         for (int y = (mtzTrabalho[0].length / 2); y < mtzTrabalho[0].length; y++) {
@@ -109,7 +109,7 @@ class SegmentaPulmoes {
         image = ImageHelper.create(mtzTrabalho, new Range<>(0, 1));
         process = new ThresholdProcess(image, 100);
         process.process();
-        mtzTrabalho = ImageHelper.getData(process.getOutputImage());
+        mtzTrabalho = ImageHelper.getData(process.getOutput());
         BinaryLabeling lbl = new BinaryLabeling(mtzTrabalho);
         // Busca os dois maiores objetos da imagem
         buscaDoisMaiores(lbl);
