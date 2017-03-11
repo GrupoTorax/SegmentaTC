@@ -3,6 +3,8 @@ package processamento;
 import dados.Exame;
 import org.torax.commons.Image;
 import org.torax.commons.Range;
+import org.torax.pdi.ShadowCastingProcess;
+import org.torax.pdi.ThresholdEdgeTrimProcess;
 import org.torax.pdi.ThresholdProcess;
 import pdi.BinaryLabeling;
 import pdi.GaussianLPF;
@@ -46,66 +48,23 @@ class SegmentaPulmoes {
         if (exame.getFatia(indiceFatia).getSliceThickness() <= 5) {
             mtzTrabalho = aplicaGauss(mtzTrabalho);
         }
-        // Faz o scan da esquerda para a direita
-        for (int y = 0; y < mtzTrabalho[0].length; y++) {
-            for (int x = 0; x < mtzTrabalho.length; x++) {
-                if (mtzTrabalho[x][y] > -200) {
-                    break;
-                }
-                mtzTrabalho[x][y] = -200;
-            }
-        }
-        // Faz o scan da direita para a esquerda
-        for (int y = 0; y < mtzTrabalho[0].length; y++) {
-            for (int x = (mtzTrabalho.length - 1); x > -1; x--) {
-                if (mtzTrabalho[x][y] > -200) {
-                    break;
-                }
-                mtzTrabalho[x][y] = -200;
-            }
-        }
-        // Faz o scan de cima para baixo
-        for (int x = 0; x < mtzTrabalho.length; x++) {
-            for (int y = 0; y < mtzTrabalho[0].length; y++) {
-                if (mtzTrabalho[x][y] > -200) {
-                    break;
-                }
-                mtzTrabalho[x][y] = -200;
-            }
-        }
-        // Faz o scan de baixo para cima
-        for (int x = 0; x < mtzTrabalho.length; x++) {
-            for (int y = (mtzTrabalho[0].length - 1); y > -1; y--) {
-                if (mtzTrabalho[x][y] > -200) {
-                    break;
-                }
-                mtzTrabalho[x][y] = -200;
-            }
-        }
+        // Cria uma "sombra" do objeto para todos os lados
+        Image image = ImageHelper.create(mtzTrabalho, new Range<>(-4000, 4000));
+        ShadowCastingProcess shadowProcess = new ShadowCastingProcess(image, -200, ShadowCastingProcess.Orientation.LEFT, ShadowCastingProcess.Orientation.RIGHT, ShadowCastingProcess.Orientation.TOP, ShadowCastingProcess.Orientation.BOTTOM);
+        shadowProcess.process();
+        mtzTrabalho = ImageHelper.getData(shadowProcess.getOutput());
+        // Histograma
         Histogram hs = new Histogram(mtzTrabalho, -1000, -200);
         int limiar = hs.getLocalMinima(hs.getMaxOcorrencias(-1000, -201), -200);
         // Converte a matriz para tons de cinza
-        Image image = ImageHelper.create(mtzTrabalho, new Range<>(255, 0));
+        image = ImageHelper.create(mtzTrabalho, new Range<>(255, 0));
         ThresholdProcess process = new ThresholdProcess(image, limiar);
         process.process();
+        // Executa o corte das bordas, para remover a mesa do tomógrafo
+        ThresholdEdgeTrimProcess edgeProcess = new ThresholdEdgeTrimProcess(image, 0, ThresholdEdgeTrimProcess.Orientation.BOTTOM);
+        edgeProcess.process();
         mtzTrabalho = ImageHelper.getData(process.getOutput());
         // Retira a mesa do tomógrafo, se existente
-        boolean vazio = false;
-        for (int y = (mtzTrabalho[0].length / 2); y < mtzTrabalho[0].length; y++) {
-            for (int x = 0; x < mtzTrabalho.length; x++) {
-                if (vazio) {
-                    mtzTrabalho[x][y] = 0;
-                    continue;
-                }
-                if (mtzTrabalho[x][y] != 0) {
-                    break;
-                }
-                // Se chegou ao final da linha e não saiu do laço
-                if (x == (mtzTrabalho.length - 1)) {
-                    vazio = true;
-                }
-            }
-        }
         image = ImageHelper.create(mtzTrabalho, new Range<>(0, 1));
         process = new ThresholdProcess(image, 100);
         process.process();
