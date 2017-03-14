@@ -3,12 +3,12 @@ package processamento;
 import dados.Exame;
 import org.torax.commons.Image;
 import org.torax.commons.Range;
+import org.torax.pdi.BinaryLabelingProcess;
+import org.torax.pdi.HistogramProcess;
 import org.torax.pdi.ShadowCastingProcess;
 import org.torax.pdi.ThresholdEdgeTrimProcess;
 import org.torax.pdi.ThresholdProcess;
-import pdi.BinaryLabeling;
 import pdi.GaussianLPF;
-import pdi.Histogram;
 import utils.ImageHelper;
 
 import static utils.Utils.copyArray;
@@ -54,8 +54,10 @@ class SegmentaPulmoes {
         shadowProcess.process();
         mtzTrabalho = ImageHelper.getData(shadowProcess.getOutput());
         // Histograma
-        Histogram hs = new Histogram(mtzTrabalho, -1000, -200);
-        int limiar = hs.getLocalMinima(hs.getMaxOcorrencias(-1000, -201), -200);
+        HistogramProcess histogramProcess = new HistogramProcess(ImageHelper.create(mtzTrabalho, new Range<>(-1000, -200)));
+        histogramProcess.process();
+        int maxOccurrence = histogramProcess.getOutput().getValueWithMaxOccurences(new Range<>(-1000, -201));
+        int limiar = histogramProcess.getOutput().getValueWithLeastOccurences(new Range<>(maxOccurrence, -200));
         // Converte a matriz para tons de cinza
         image = ImageHelper.create(mtzTrabalho, new Range<>(255, 0));
         ThresholdProcess process = new ThresholdProcess(image, limiar);
@@ -69,33 +71,37 @@ class SegmentaPulmoes {
         process = new ThresholdProcess(image, 100);
         process.process();
         mtzTrabalho = ImageHelper.getData(process.getOutput());
-        BinaryLabeling lbl = new BinaryLabeling(mtzTrabalho);
+        image = ImageHelper.create(mtzTrabalho, new Range<>(-4000, 4000));
+        BinaryLabelingProcess binaryLabelingProcess = new BinaryLabelingProcess(image);
+        binaryLabelingProcess.process();
         // Busca os dois maiores objetos da imagem
-        buscaDoisMaiores(lbl);
+        buscaDoisMaiores(binaryLabelingProcess);
         // Verifica se os pulmões estão conectados, sendo reconhecidos como somente 1 objeto
-        if (verificaConectados(lbl.getMatrizBinLabel(labelMaior1), maior1)) {
+        if (verificaConectados(binaryLabelingProcess.getMatrix(labelMaior1), maior1)) {
             System.out.println("Conectados! Fatia: " + (indiceFatia + 1));
             //separa os pulmões (altera mtzTrabalho, separando os pulmões
-            separaPulmoes(lbl.getMatrizBinLabel(labelMaior1));
+            separaPulmoes(binaryLabelingProcess.getMatrix(labelMaior1));
             //refaz a rotulação, agora com os pulmões separados
-            lbl = new BinaryLabeling(mtzTrabalho);
+            image = ImageHelper.create(mtzTrabalho, new Range<>(-4000, 4000));
+            binaryLabelingProcess = new BinaryLabelingProcess(image);
+            binaryLabelingProcess.process();
             //busca os dois maiores objetos da imagem
-            buscaDoisMaiores(lbl);
+            buscaDoisMaiores(binaryLabelingProcess);
         }
         // Verifica qual dos dois objetos começa mais a esquerda
         // ATENÇÃO, a matriz retornada abaixo não está com o "offset" de objetos, por isso é necessário acrescentar 1 na comparação, mas não no get da matriz booleana!
-        mtzTrabalho = lbl.getLabelledMatrix();
+        mtzTrabalho = ImageHelper.getData(binaryLabelingProcess.getOutput().getImage());
         for (int x = 0; x < mtzTrabalho.length; x++) {
             for (int y = 0; y < mtzTrabalho[0].length; y++) {
                 if (mtzTrabalho[x][y] == (labelMaior1 + 1)) {
-                    exame.getFatia(indiceFatia).setMatrizPulmaoEsq(lbl.getMatrizBinLabel(labelMaior1));
-                    exame.getFatia(indiceFatia).setMatrizPulmaoDir(lbl.getMatrizBinLabel(labelMaior2));
+                    exame.getFatia(indiceFatia).setMatrizPulmaoEsq(binaryLabelingProcess.getMatrix(labelMaior1));
+                    exame.getFatia(indiceFatia).setMatrizPulmaoDir(binaryLabelingProcess.getMatrix(labelMaior2));
                     x = mtzTrabalho.length;
                     break;
                 }
                 if (mtzTrabalho[x][y] == (labelMaior2 + 1)) {
-                    exame.getFatia(indiceFatia).setMatrizPulmaoEsq(lbl.getMatrizBinLabel(labelMaior2));
-                    exame.getFatia(indiceFatia).setMatrizPulmaoDir(lbl.getMatrizBinLabel(labelMaior1));
+                    exame.getFatia(indiceFatia).setMatrizPulmaoEsq(binaryLabelingProcess.getMatrix(labelMaior2));
+                    exame.getFatia(indiceFatia).setMatrizPulmaoDir(binaryLabelingProcess.getMatrix(labelMaior1));
                     x = mtzTrabalho.length;
                     break;
                 }
@@ -129,13 +135,13 @@ class SegmentaPulmoes {
         return (tamEsquerda >= (maior * 0.3)) & (tamDireita >= (maior * 0.3));
     }
 
-    private void buscaDoisMaiores(BinaryLabeling lbl) {
+    private void buscaDoisMaiores(BinaryLabelingProcess binaryLabelingProcess) {
         maior1 = 0;
         maior2 = 0;
         labelMaior1 = 0;
         labelMaior2 = 0;
-        for (int i = 1; i <= lbl.getTotal(); i++) {
-            tamanho = lbl.getTamanhoTotal(i);
+        for (int i = 1; i <= binaryLabelingProcess.getOutput().getSize(); i++) {
+            tamanho = binaryLabelingProcess.getSize(i);
             if (tamanho > maior1) {
                 maior2 = maior1;
                 labelMaior2 = labelMaior1;
