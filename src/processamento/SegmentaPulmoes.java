@@ -4,11 +4,11 @@ import dados.Exame;
 import org.torax.commons.Image;
 import org.torax.commons.Range;
 import org.torax.pdi.BinaryLabelingProcess;
+import org.torax.pdi.GaussianBlurProcess;
 import org.torax.pdi.HistogramProcess;
 import org.torax.pdi.ShadowCastingProcess;
 import org.torax.pdi.ThresholdEdgeTrimProcess;
 import org.torax.pdi.ThresholdProcess;
-import pdi.GaussianLPF;
 import utils.ImageHelper;
 
 import static utils.Utils.copyArray;
@@ -112,8 +112,11 @@ class SegmentaPulmoes {
     private int[][] aplicaGauss(int[][] mtzTrabalho) {
         double sigma = 1.76;
         int tam = 5;
-        int[][] matriz = copyArray(mtzTrabalho);
-        return GaussianLPF.aplicaGauss1D(matriz, sigma, tam);
+        Image image = ImageHelper.create(mtzTrabalho, new Range<>(-4000, 4000));
+        GaussianBlurProcess process = new GaussianBlurProcess(image, sigma, tam);
+        process.process();
+        process.getOutput();
+        return ImageHelper.getData(process.getOutput());
     }
 
     private boolean verificaConectados(boolean[][] matrizBinLabel, int maior) {
