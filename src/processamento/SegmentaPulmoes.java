@@ -8,6 +8,7 @@ import org.torax.pdi.GaussianBlurProcess;
 import org.torax.pdi.HistogramProcess;
 import org.torax.pdi.ShadowCastingProcess;
 import org.torax.pdi.ThresholdEdgeTrimProcess;
+import org.torax.pdi.ThresholdLimitProcess;
 import org.torax.pdi.ThresholdProcess;
 import utils.ImageHelper;
 
@@ -37,19 +38,15 @@ class SegmentaPulmoes {
         // Deve copiar o conteudo da matriz pois NÃO deve alterar o matriz de coeficientes original
         mtzTrabalho = copyArray(exame.getFatia(indiceFatia).getMatrizCoeficientes());
         // Converte qualquer valor fora da faixa de valores válidos para um valor conhecido de background
-        for (int y = 0; y < mtzTrabalho[0].length; y++) {
-            for (int x = 0; x < mtzTrabalho.length; x++) {
-                if (mtzTrabalho[x][y] > 4000) {
-                    mtzTrabalho[x][y] = -1000;
-                }
-            }
-        }
+        Image image = ImageHelper.create(mtzTrabalho, new Range<>(-4000, 4000));
+        ThresholdLimitProcess limit = new ThresholdLimitProcess(image, Integer.MIN_VALUE, 4000, -1000, -1000);
+        limit.process();
+        image = limit.getOutput();
         // Se a espessura da fatia for menor que 5mm
         if (exame.getFatia(indiceFatia).getSliceThickness() <= 5) {
-            mtzTrabalho = aplicaGauss(mtzTrabalho);
+            image = aplicaGauss(image);
         }
         // Cria uma "sombra" do objeto para todos os lados
-        Image image = ImageHelper.create(mtzTrabalho, new Range<>(-4000, 4000));
         ShadowCastingProcess shadowProcess = new ShadowCastingProcess(image, -200, ShadowCastingProcess.Orientation.LEFT, ShadowCastingProcess.Orientation.RIGHT, ShadowCastingProcess.Orientation.TOP, ShadowCastingProcess.Orientation.BOTTOM);
         shadowProcess.process();
         mtzTrabalho = ImageHelper.getData(shadowProcess.getOutput());
@@ -109,14 +106,12 @@ class SegmentaPulmoes {
         }
     }
 
-    private int[][] aplicaGauss(int[][] mtzTrabalho) {
+    private Image aplicaGauss(Image image) {
         double sigma = 1.76;
         int tam = 5;
-        Image image = ImageHelper.create(mtzTrabalho, new Range<>(-4000, 4000));
         GaussianBlurProcess process = new GaussianBlurProcess(image, sigma, tam);
         process.process();
-        process.getOutput();
-        return ImageHelper.getData(process.getOutput());
+        return process.getOutput();
     }
 
     private boolean verificaConectados(boolean[][] matrizBinLabel, int maior) {
