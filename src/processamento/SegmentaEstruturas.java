@@ -1,22 +1,26 @@
 package processamento;
 
-import dados.Exame;
+import dados.ExameSegmentado;
+import org.torax.commons.Exam;
 
 /**
  *
  * @author Rodrigo
  */
 public class SegmentaEstruturas {
-    private final Exame exame;
+    private final Exam exam;
 
-    public SegmentaEstruturas(Exame exame) {
-        this.exame = exame;
+    public SegmentaEstruturas(Exam exam) {
+        this.exam = exam;
     }
 
-    public void segmenta() {        
-        SegmentaPulmoes segPul = new SegmentaPulmoes(exame);
+    public ExameSegmentado segmenta() {        
+        ExameSegmentado exameSegmentado = new ExameSegmentado(exam);
+
+        SegmentaPulmoes segPul = new SegmentaPulmoes(exam, exameSegmentado);
         segPul.segmenta();
         
+        return exameSegmentado;
         //executa todos os processos de segmentação
         
       //  new VisualizaImagem(exame.getFatia(30).getMatrizPulmoes());

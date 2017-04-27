@@ -18,11 +18,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
  */
 public class Controller {
 
-    public static final int DIRETORIO = 1;
-    public static final int ARQUIVO = 2;
-
     private File ultimoDiretorio = null;
-    private File ultimoArquivo = null;
 
     private JFileChooser selecaoDirArq = null;
 
@@ -34,47 +30,46 @@ public class Controller {
 
     public void iniciaAplicacao() {
         prepararSeletorDirArq();
-
         janela = new View(this);
         janela.exibe();
-        load(new File(getClass().getResource("/diacon").getFile()), DIRETORIO);
     }
 
     public boolean temExameCarregado() {
         return dados != null;
     }
 
-    void selecionarDirArq(int tipo) {
+    void selecionarDiretorio() {
+        selecaoDirArq.setDialogTitle("Selecione o diretório onde estão os arquivos DICOM");
+        selecaoDirArq.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        selecionarDirArq();
+        ultimoDiretorio = selecaoDirArq.getSelectedFile();
+    }
+    
+    void selecionarArquivo() {
+        selecaoDirArq.setDialogTitle("Selecione o arquivo DICOM");
+        selecaoDirArq.setFileFilter(filtroArquivosDcm);
+        selecaoDirArq.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        selecionarDirArq();
+        ultimoDiretorio = new File(selecaoDirArq.getSelectedFile().getParent());
+    }
+
+
+    private void selecionarDirArq() {
         if (ultimoDiretorio != null) {
             selecaoDirArq.setCurrentDirectory(ultimoDiretorio);
         }
-        if (tipo == DIRETORIO) {
-            selecaoDirArq.setDialogTitle("Selecione o diretório onde estão os arquivos DICOM");
-            selecaoDirArq.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-        } else {
-            selecaoDirArq.setDialogTitle("Selecione o arquivo DICOM");
-            selecaoDirArq.setFileFilter(filtroArquivosDcm);
-            selecaoDirArq.setFileSelectionMode(JFileChooser.FILES_ONLY);
-        }
         if (selecaoDirArq.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
-            load(selecaoDirArq.getSelectedFile(), tipo);
+            load(selecaoDirArq.getSelectedFile());
         }
     }
 
-    private void load(File path, int tipo) {
+    private void load(File path) {
         final File itemSelecionado = path;
         try {
-            dados = new Model(tipo, itemSelecionado.getAbsolutePath());
+            dados = new Model(itemSelecionado.getAbsolutePath());
             janela.limitaSlider(dados.getNumeroFatias());
             janela.atualizaImagem();
 
-            if (tipo == DIRETORIO) {
-                ultimoDiretorio = itemSelecionado;
-                ultimoArquivo = null;
-            } else {
-                ultimoDiretorio = new File(itemSelecionado.getParent());
-                ultimoArquivo = itemSelecionado;
-            }
         } catch (Exception ex) {
             Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -155,7 +150,7 @@ public class Controller {
         return geraImagem(janela.getValorSlider());
     }
 
-    BufferedImage geraImagem(final int fatia) {
+    private BufferedImage geraImagem(final int fatia) {
         BufferedImage imagem = geraImagemDados(fatia);
         if (janela.isSegPulmaoEsqMarcado()) {
             pintaImagem(imagem, dados.getMatrizPulmaoEsq(fatia), Color.yellow);

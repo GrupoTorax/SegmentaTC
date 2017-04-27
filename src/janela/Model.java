@@ -1,7 +1,10 @@
 package janela;
 
-import dados.Exame;
+import dados.ExameSegmentado;
 import java.awt.image.BufferedImage;
+import org.torax.commons.Exam;
+import org.torax.examsio.ExamLoader;
+import processamento.SegmentaEstruturas;
 
 /**
  *
@@ -9,56 +12,51 @@ import java.awt.image.BufferedImage;
  */
 public class Model {
 
-    public static final int DIRETORIO = 1;
-    public static final int ARQUIVO = 2;
+    private final Exam exam;
+    private final ExameSegmentado exameSegmentado;
 
-    private final Exame exame;
+    public Model(String localizacao) throws Exception {
 
-    public Model(int tipo, String localizacao) throws Exception {
-
-        System.out.println("Diretório/arquivo: " + localizacao);
-
-        if (tipo == DIRETORIO) {
-            exame = new Exame(Exame.DIRETORIO, localizacao);
-        } else {
-            exame = new Exame(Exame.ARQUIVO, localizacao);
-        }
+        exam = ExamLoader.load(localizacao);
+        SegmentaEstruturas segEst = new SegmentaEstruturas(exam);
+        exameSegmentado = segEst.segmenta();
+        
     }
 
     public String getNomeArquivo(final int fatia) {
-        return exame.getNomeArquivo(fatia);
+        return exam.getExamSlice(fatia).getSourceFile().getName();
     }
 
     BufferedImage getImagemFatia(int indice, int WL, int WW) {
-        return exame.getImagemFatia(indice, WL, WW);
+        return exam.getExamSlice(indice).getBufferedImageWithWLWW(WL, WW);
     }
 
     int getNumeroFatias() {
-        return exame.getNumeroFatias();
+        return exam.getNumberOfSlices();
     }
 
     boolean[][] getMatrizPulmaoEsq(int indice) {
-        return exame.getFatia(indice).getPulmaoEsq();
+        return exameSegmentado.getFatiaExameSegmentado(indice).getPulmaoEsq();
     }
 
     int getTamanhoPulmaoEsq(int indice) {
-        return exame.getFatia(indice).getTamanhoPulmaoEsq();
+        return exameSegmentado.getFatiaExameSegmentado(indice).getTamanhoPulmaoEsq();
     }
 
     boolean[][] getMatrizPulmaoDir(int indice) {
-        return exame.getFatia(indice).getPulmaoDir();
+        return exameSegmentado.getFatiaExameSegmentado(indice).getPulmaoDir();
     }
 
     int getTamanhoPulmaoDir(int indice) {
-        return exame.getFatia(indice).getTamanhoPulmaoDir();
+        return exameSegmentado.getFatiaExameSegmentado(indice).getTamanhoPulmaoDir();
     }
 
     int[][] getMatrizOriginal(int indice) {
-        return exame.getFatia(indice).getMatrizCoeficientes();
+        return exam.getExamSlice(indice).getCoefficientMatrix();
     }
 
     float getEspessuraFatia(int indice) {
-        return exame.getFatia(indice).getSliceThickness();
+        return exam.getExamSlice(indice).getSliceThickness();
     }
 
 }

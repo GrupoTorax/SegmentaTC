@@ -1,10 +1,10 @@
 package testes;
 
-import dados.Exame;
 import java.awt.image.BufferedImage;
 import javax.swing.ImageIcon;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
+import org.torax.commons.Exam;
 
 /**
  *
@@ -22,8 +22,8 @@ public class VisualizaImagem {
         exibeImagem(imagem);
     }
 
-    public VisualizaImagem(int indice, Exame exame, int[][] matrizImagem, int WL, int WW) {
-        exibeImagem(exame.geraImagemMtz(indice, matrizImagem, WL, WW));
+    public VisualizaImagem(int indice, Exam exam, int[][] matrizImagem, int WL, int WW) {
+        exibeImagem(exam.getExamSlice(indice).getBufferedImageWithWLWW(WL, WW));
     }
 
     private int getPixelValue(int pixel) {

@@ -39,8 +39,8 @@ public class View {
     private static final String LITERAL_PULMOES = "Pulmões";
     private static final String LITERAL_CUSTOMIZADO = "Customizado";
 
-    private final Controller controle;
-
+    private final Controller controller;
+    
     private JFrame janela;
     private JMenuBar menu;
     private JPanel painelImagem;
@@ -56,17 +56,17 @@ public class View {
     private JLabel sliceCorrente;
     private JSlider slider;
 
-    JLabel labelNomeArquivo;
-    JLabel labelIndiceImagem;
-    JLabel espessuraFatia;
-    JLabel labelCoordenadas;
-    JLabel labelHU;
-    JLabel labelRGB;
-    JLabel tamPulmaoEsquerdo;
-    JLabel tamPulmaoDireito;
+    private JLabel labelNomeArquivo;
+    private JLabel labelIndiceImagem;
+    private JLabel espessuraFatia;
+    private JLabel labelCoordenadas;
+    private JLabel labelHU;
+    private JLabel labelRGB;
+    private JLabel tamPulmaoEsquerdo;
+    private JLabel tamPulmaoDireito;
 
-    public View(Controller controle) {
-        this.controle = controle;
+    public View(Controller controller) {
+        this.controller = controller;
     }
 
     public void exibe() {
@@ -132,39 +132,39 @@ public class View {
         menu.add(menuArquivo);
         JMenuItem submenuSelecionarDiretorio = new JMenuItem("Selecionar diretório");
         submenuSelecionarDiretorio.addActionListener((ActionEvent e) -> {
-            controle.selecionarDirArq(Controller.DIRETORIO);
+            controller.selecionarDiretorio();
         });
         menuArquivo.add(submenuSelecionarDiretorio);
         JMenuItem submenuSelecionarArquivo = new JMenuItem("Selecionar arquivo");
         submenuSelecionarArquivo.addActionListener((ActionEvent e) -> {
-            controle.selecionarDirArq(Controller.ARQUIVO);
+            controller.selecionarArquivo();
         });
         menuArquivo.add(submenuSelecionarArquivo);
         JMenuItem submenuSalvarF = new JMenuItem("Salvar fatia");
         submenuSalvarF.addActionListener((ActionEvent e) -> {
-            if (!controle.temExameCarregado()) {
+            if (!controller.temExameCarregado()) {
                 JOptionPane.showMessageDialog(null, "Não há nenhum exame carregado.");
                 return;
             }
-            controle.salvarFatia();
+            controller.salvarFatia();
         });
         menuArquivo.add(submenuSalvarF);
         JMenuItem submenuSalvarE = new JMenuItem("Salvar exame");
         submenuSalvarE.addActionListener((ActionEvent e) -> {
-            if (!controle.temExameCarregado()) {
+            if (!controller.temExameCarregado()) {
                 JOptionPane.showMessageDialog(null, "Não há nenhum exame carregado.");
                 return;
             }
-            controle.salvarExame();
+            controller.salvarExame();
         });
         menuArquivo.add(submenuSalvarE);
         JMenuItem comparaExame = new JMenuItem("Comparar exame");
         comparaExame.addActionListener((ActionEvent e) -> {
-            if (!controle.temExameCarregado()) {
+            if (!controller.temExameCarregado()) {
                 JOptionPane.showMessageDialog(null, "Não há nenhum exame carregado.");
                 return;
             }
-            controle.comparaExame();
+            controller.comparaExame();
         });
         menuArquivo.add(comparaExame);
         JMenuItem submenuSair = new JMenuItem("Sair");
@@ -285,7 +285,7 @@ public class View {
 
     private void atualizaCoordenadas(final int x, final int y) {
         //se não tem exame carregado
-        if (!controle.temExameCarregado()) {
+        if (!controller.temExameCarregado()) {
             labelCoordenadas.setText("");
             labelHU.setText("");
             labelRGB.setText("");
@@ -295,7 +295,7 @@ public class View {
         //atualiza as infromações do pixel selecionado
         labelCoordenadas.setText("  Coordenadas: " + x + ", " + y);
         //MELHORAR ESTE PONTO, A FORMA COMO OBTEM OS DADOS!
-        labelHU.setText("  Valor em HU: " + controle.dados.getMatrizOriginal(getValorSlider())[x][y]);
+        labelHU.setText("  Valor em HU: " + controller.dados.getMatrizOriginal(getValorSlider())[x][y]);
 
         BufferedImage imagem = new BufferedImage(sliceCorrente.getIcon().getIconWidth(),
                 sliceCorrente.getIcon().getIconHeight(),
@@ -328,14 +328,14 @@ public class View {
     }
 
     void atualizaImagem() {
-        BufferedImage imagem = controle.geraImagem();
+        BufferedImage imagem = controller.geraImagem();
         sliceCorrente.setIcon(new ImageIcon(imagem));
 
-        labelNomeArquivo.setText("  Arquivo: " + controle.dados.getNomeArquivo(getValorSlider()));
-        labelIndiceImagem.setText("  Fatia: " + (getValorSlider() + 1) + " / " + controle.dados.getNumeroFatias());
-        espessuraFatia.setText("  Espessura: " + controle.dados.getEspessuraFatia(getValorSlider()) + " mm");
-        tamPulmaoEsquerdo.setText("  Pulmão esquerdo: " + controle.dados.getTamanhoPulmaoEsq(getValorSlider()) + " pixels");
-        tamPulmaoDireito.setText("  Pulmão direito: " + controle.dados.getTamanhoPulmaoDir(getValorSlider()) + " pixels");
+        labelNomeArquivo.setText("  Arquivo: " + controller.dados.getNomeArquivo(getValorSlider()));
+        labelIndiceImagem.setText("  Fatia: " + (getValorSlider() + 1) + " / " + controller.dados.getNumeroFatias());
+        espessuraFatia.setText("  Espessura: " + controller.dados.getEspessuraFatia(getValorSlider()) + " mm");
+        tamPulmaoEsquerdo.setText("  Pulmão esquerdo: " + controller.dados.getTamanhoPulmaoEsq(getValorSlider()) + " pixels");
+        tamPulmaoDireito.setText("  Pulmão direito: " + controller.dados.getTamanhoPulmaoDir(getValorSlider()) + " pixels");
 
     }
 

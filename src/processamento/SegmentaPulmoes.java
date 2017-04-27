@@ -1,6 +1,7 @@
 package processamento;
 
-import dados.Exame;
+import dados.ExameSegmentado;
+import org.torax.commons.Exam;
 import org.torax.commons.Image;
 import org.torax.commons.Range;
 import org.torax.pdi.BinaryLabelingProcess;
@@ -20,30 +21,32 @@ import static utils.Utils.copyArray;
  */
 class SegmentaPulmoes {
 
-    private final Exame exame;
+    private final Exam exam;
+    private final ExameSegmentado exameSegmentado;
     private int[][] mtzTrabalho;
     private int labelMaior1, labelMaior2, tamanho, maior1, maior2;
 
-    public SegmentaPulmoes(Exame exame) {
-        this.exame = exame;
+    public SegmentaPulmoes(Exam exam, ExameSegmentado exameSegmentado) {
+        this.exam = exam;
+        this.exameSegmentado = exameSegmentado;
     }
 
     public void segmenta() {
-        for (int indiceFatia = 0; indiceFatia < exame.getNumeroFatias(); indiceFatia++) {
+        for (int indiceFatia = 0; indiceFatia < exam.getNumberOfSlices(); indiceFatia++) {
             segmentaFatia(indiceFatia);
         }
     }
 
     private void segmentaFatia(int indiceFatia) {
         // Deve copiar o conteudo da matriz pois NÃO deve alterar o matriz de coeficientes original
-        mtzTrabalho = copyArray(exame.getFatia(indiceFatia).getMatrizCoeficientes());
+        mtzTrabalho = copyArray(exam.getExamSlice(indiceFatia).getCoefficientMatrix());
         // Converte qualquer valor fora da faixa de valores válidos para um valor conhecido de background
         Image image = ImageHelper.create(mtzTrabalho, new Range<>(-4000, 4000));
         ThresholdLimitProcess limit = new ThresholdLimitProcess(image, Integer.MIN_VALUE, 4000, -1000, -1000);
         limit.process();
         image = limit.getOutput();
         // Se a espessura da fatia for menor que 5mm
-        if (exame.getFatia(indiceFatia).getSliceThickness() <= 5) {
+        if (exam.getExamSlice(indiceFatia).getSliceThickness() <= 5) {
             image = aplicaGauss(image);
         }
         // Cria uma "sombra" do objeto para todos os lados
@@ -91,14 +94,14 @@ class SegmentaPulmoes {
         for (int x = 0; x < mtzTrabalho.length; x++) {
             for (int y = 0; y < mtzTrabalho[0].length; y++) {
                 if (mtzTrabalho[x][y] == (labelMaior1 + 1)) {
-                    exame.getFatia(indiceFatia).setMatrizPulmaoEsq(binaryLabelingProcess.getMatrix(labelMaior1));
-                    exame.getFatia(indiceFatia).setMatrizPulmaoDir(binaryLabelingProcess.getMatrix(labelMaior2));
+                    exameSegmentado.getFatiaExameSegmentado(indiceFatia).setMatrizPulmaoEsq(binaryLabelingProcess.getMatrix(labelMaior1));
+                    exameSegmentado.getFatiaExameSegmentado(indiceFatia).setMatrizPulmaoDir(binaryLabelingProcess.getMatrix(labelMaior2));
                     x = mtzTrabalho.length;
                     break;
                 }
                 if (mtzTrabalho[x][y] == (labelMaior2 + 1)) {
-                    exame.getFatia(indiceFatia).setMatrizPulmaoEsq(binaryLabelingProcess.getMatrix(labelMaior2));
-                    exame.getFatia(indiceFatia).setMatrizPulmaoDir(binaryLabelingProcess.getMatrix(labelMaior1));
+                    exameSegmentado.getFatiaExameSegmentado(indiceFatia).setMatrizPulmaoEsq(binaryLabelingProcess.getMatrix(labelMaior2));
+                    exameSegmentado.getFatiaExameSegmentado(indiceFatia).setMatrizPulmaoDir(binaryLabelingProcess.getMatrix(labelMaior1));
                     x = mtzTrabalho.length;
                     break;
                 }
