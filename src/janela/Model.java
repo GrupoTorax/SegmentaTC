@@ -1,10 +1,10 @@
 package janela;
 
-import dados.ExameSegmentado;
 import java.awt.image.BufferedImage;
 import org.torax.commons.Exam;
 import org.torax.examsio.ExamLoader;
-import processamento.SegmentaEstruturas;
+import org.torax.orchestration.Orchestration;
+import org.torax.orchestration.ExamResult;
 
 /**
  *
@@ -13,12 +13,12 @@ import processamento.SegmentaEstruturas;
 public class Model {
 
     private final Exam exam;
-    private final ExameSegmentado exameSegmentado;
+    private final ExamResult exameSegmentado;
 
     public Model(String localizacao) throws Exception {
 
         exam = ExamLoader.load(localizacao);
-        SegmentaEstruturas segEst = new SegmentaEstruturas(exam);
+        Orchestration segEst = new Orchestration(exam);
         exameSegmentado = segEst.segmenta();
         
     }

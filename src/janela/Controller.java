@@ -32,6 +32,7 @@ public class Controller {
         prepararSeletorDirArq();
         janela = new View(this);
         janela.exibe();
+        load(new File(getClass().getResource("/diacon").getFile()));
     }
 
     public boolean temExameCarregado() {
