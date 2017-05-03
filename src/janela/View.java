@@ -13,7 +13,6 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 import java.awt.image.BufferedImage;
 import javax.swing.ImageIcon;
-import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
@@ -43,6 +42,7 @@ public class View {
     
     private JFrame janela;
     private JMenuBar menu;
+    private JPanel painelInfo;
     private JPanel painelImagem;
     private JPanel painelCentral;
     private JPanel painelRodape;
@@ -51,8 +51,6 @@ public class View {
     private JFormattedTextField windowLevel;
     private JFormattedTextField windowWidth;
     private JComboBox templateWLWW;
-    private JCheckBox segPulmaoEsq;
-    private JCheckBox segPulmaoDir;
     private JLabel sliceCorrente;
     private JSlider slider;
 
@@ -62,8 +60,6 @@ public class View {
     private JLabel labelCoordenadas;
     private JLabel labelHU;
     private JLabel labelRGB;
-    private JLabel tamPulmaoEsquerdo;
-    private JLabel tamPulmaoDireito;
 
     public View(Controller controller) {
         this.controller = controller;
@@ -188,7 +184,7 @@ public class View {
     }
 
     private void criaRodape() {
-        painelRodape.setLayout(new GridLayout(0, 3));
+        painelRodape.setLayout(new GridLayout(0, 2));
 
         painelRodape.add(new JLabel("Nível de janela (WL)"));
         windowLevel = new JFormattedTextField();
@@ -208,10 +204,6 @@ public class View {
             atualizaImagem();
         };
 
-        segPulmaoEsq = new JCheckBox("Pulmão esquerdo");
-        segPulmaoEsq.addActionListener(listenerCheckBoxes);
-        painelRodape.add(segPulmaoEsq);
-
         painelRodape.add(new JLabel("Largura de janela (WW)"));
         windowWidth = new JFormattedTextField();
         windowWidth.addFocusListener(new FocusListener() {
@@ -225,10 +217,6 @@ public class View {
             }
         });
         painelRodape.add(windowWidth);
-
-        segPulmaoDir = new JCheckBox("Pulmão direito");
-        segPulmaoDir.addActionListener(listenerCheckBoxes);
-        painelRodape.add(segPulmaoDir);
 
         painelRodape.add(new JLabel("Templates"));
         templateWLWW = new JComboBox();
@@ -252,7 +240,7 @@ public class View {
         JScrollPane sPainelInfo = new JScrollPane();
         painelCentral.add(sPainelInfo, BorderLayout.EAST);
 
-        JPanel painelInfo = new JPanel(new GridLayout(0, 1));
+        painelInfo = new JPanel(new GridLayout(0, 1));
         sPainelInfo.setViewportView(painelInfo);
 
         painelInfo.add(new JLabel("                 INFORMAÇÕES                 "));
@@ -274,12 +262,6 @@ public class View {
 
         labelRGB = new JLabel();
         painelInfo.add(labelRGB);
-
-        tamPulmaoEsquerdo = new JLabel();
-        painelInfo.add(tamPulmaoEsquerdo);
-
-        tamPulmaoDireito = new JLabel();
-        painelInfo.add(tamPulmaoDireito);
 
     }
 
@@ -334,8 +316,6 @@ public class View {
         labelNomeArquivo.setText("  Arquivo: " + controller.dados.getNomeArquivo(getValorSlider()));
         labelIndiceImagem.setText("  Fatia: " + (getValorSlider() + 1) + " / " + controller.dados.getNumeroFatias());
         espessuraFatia.setText("  Espessura: " + controller.dados.getEspessuraFatia(getValorSlider()) + " mm");
-        tamPulmaoEsquerdo.setText("  Pulmão esquerdo: " + controller.dados.getTamanhoPulmaoEsq(getValorSlider()) + " pixels");
-        tamPulmaoDireito.setText("  Pulmão direito: " + controller.dados.getTamanhoPulmaoDir(getValorSlider()) + " pixels");
 
     }
 
@@ -349,14 +329,6 @@ public class View {
 
     int getWL() {
         return Integer.parseInt(windowLevel.getText());
-    }
-
-    boolean isSegPulmaoEsqMarcado() {
-        return segPulmaoEsq.isSelected();
-    }
-
-    boolean isSegPulmaoDirMarcado() {
-        return segPulmaoDir.isSelected();
     }
 
     void limitaSlider(int numeroFatias) {

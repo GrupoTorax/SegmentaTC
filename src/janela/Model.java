@@ -1,10 +1,13 @@
 package janela;
 
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import java.util.List;
 import org.torax.commons.Exam;
 import org.torax.examsio.ExamLoader;
 import org.torax.orchestration.Orchestration;
 import org.torax.orchestration.ExamResult;
+import org.torax.orchestration.Structure;
 
 /**
  *
@@ -35,22 +38,15 @@ public class Model {
         return exam.getNumberOfSlices();
     }
 
-    boolean[][] getMatrizPulmaoEsq(int indice) {
-        return exameSegmentado.getFatiaExameSegmentado(indice).getPulmaoEsq();
+    /**
+     * Return the structures
+     * 
+     * @return {@code List<Structure>}
+     */
+    public List<Structure> getStructures() {
+        return new ArrayList<>(exameSegmentado.getStructures().values());
     }
-
-    int getTamanhoPulmaoEsq(int indice) {
-        return exameSegmentado.getFatiaExameSegmentado(indice).getTamanhoPulmaoEsq();
-    }
-
-    boolean[][] getMatrizPulmaoDir(int indice) {
-        return exameSegmentado.getFatiaExameSegmentado(indice).getPulmaoDir();
-    }
-
-    int getTamanhoPulmaoDir(int indice) {
-        return exameSegmentado.getFatiaExameSegmentado(indice).getTamanhoPulmaoDir();
-    }
-
+    
     int[][] getMatrizOriginal(int indice) {
         return exam.getExamSlice(indice).getCoefficientMatrix();
     }

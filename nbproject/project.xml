@@ -41,7 +41,7 @@
                 <id>jar</id>
             </reference>
             <reference>
-                <foreign-project>Orchestration</foreign-project>
+                <foreign-project>PDI</foreign-project>
                 <artifact-type>jar</artifact-type>
                 <script>build.xml</script>
                 <target>jar</target>
@@ -49,7 +49,7 @@
                 <id>jar</id>
             </reference>
             <reference>
-                <foreign-project>PDI</foreign-project>
+                <foreign-project>ProcessingFlow</foreign-project>
                 <artifact-type>jar</artifact-type>
                 <script>build.xml</script>
                 <target>jar</target>

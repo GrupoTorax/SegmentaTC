@@ -11,6 +11,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import org.torax.orchestration.Structure;
 
 /**
  *
@@ -153,19 +154,23 @@ public class Controller {
 
     private BufferedImage geraImagem(final int fatia) {
         BufferedImage imagem = geraImagemDados(fatia);
-        if (janela.isSegPulmaoEsqMarcado()) {
-            pintaImagem(imagem, dados.getMatrizPulmaoEsq(fatia), Color.yellow);
-        }
-        if (janela.isSegPulmaoDirMarcado()) {
-            pintaImagem(imagem, dados.getMatrizPulmaoDir(fatia), Color.green);
+//        if (janela.isSegPulmaoEsqMarcado()) {
+//            pintaImagem(imagem, dados.getMatrizPulmaoEsq(fatia), Color.yellow);
+//        }
+//        if (janela.isSegPulmaoDirMarcado()) {
+//            pintaImagem(imagem, dados.getMatrizPulmaoDir(fatia), Color.green);
+//        }
+        for (Structure structure : dados.getStructures()) {
+            pintaImagem(imagem, structure.getSlice(fatia).getBinaryLabel(), structure.getType().getColor());
         }
         return imagem;
     }
 
     BufferedImage geraImagemComparacao(final int fatia) {
         BufferedImage imagem = geraImagemDados(fatia);
-        pintaImagem(imagem, dados.getMatrizPulmaoEsq(fatia), Color.yellow);
-        pintaImagem(imagem, dados.getMatrizPulmaoDir(fatia), Color.green);
+        for (Structure structure : dados.getStructures()) {
+            pintaImagem(imagem, structure.getSlice(fatia).getBinaryLabel(), structure.getType().getColor());
+        }
         return imagem;
     }
 
