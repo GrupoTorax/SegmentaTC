@@ -47,6 +47,15 @@ public class Model {
         return new ArrayList<>(exameSegmentado.getStructures().values());
     }
     
+    /**
+     * Returns the exam result
+     * 
+     * @return ExamResult
+     */
+    public ExamResult getExamResult() {
+        return exameSegmentado;
+    }
+    
     int[][] getMatrizOriginal(int indice) {
         return exam.getExamSlice(indice).getCoefficientMatrix();
     }

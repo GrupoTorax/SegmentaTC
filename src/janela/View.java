@@ -168,6 +168,14 @@ public class View {
             janela.dispose();
         });
         menuArquivo.add(submenuSair);
+        JMenu menuEditar = new JMenu("Editar");
+        menu.add(menuEditar);
+        JMenuItem submenuEditarEstruturas = new JMenuItem("Editar estruturas");
+        submenuEditarEstruturas.addActionListener((ActionEvent e) -> {
+            new StructureDrawPanel(controller.dados.getExamResult().getSlice(getValorSlider()), getWL(), getWW()).showDialog();
+            atualizaImagem();
+        });
+        menuEditar.add(submenuEditarEstruturas);
         JMenu menuSobre = new JMenu("Sobre");
         menu.add(menuSobre);
         JMenuItem submenuSobre = new JMenuItem("Sobre");
