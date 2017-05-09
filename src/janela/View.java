@@ -61,6 +61,8 @@ public class View {
     private JLabel labelHU;
     private JLabel labelRGB;
 
+    private ExportInterface expInt;
+    
     public View(Controller controller) {
         this.controller = controller;
     }
@@ -168,6 +170,7 @@ public class View {
             janela.dispose();
         });
         menuArquivo.add(submenuSair);
+        
         JMenu menuEditar = new JMenu("Editar");
         menu.add(menuEditar);
         JMenuItem submenuEditarEstruturas = new JMenuItem("Editar estruturas");
@@ -175,7 +178,25 @@ public class View {
             new StructureDrawPanel(controller.dados.getExamResult().getSlice(getValorSlider()), getWL(), getWW()).showDialog();
             atualizaImagem();
         });
-        menuEditar.add(submenuEditarEstruturas);
+        menuEditar.add(submenuEditarEstruturas);  
+        JMenu menuExportar = new JMenu("Exportar");
+        menu.add(menuExportar);
+        JMenuItem submenuExportarPaciente = new JMenuItem("Paciente");
+        submenuExportarPaciente.addActionListener((ActionEvent e) -> {   
+            if(expInt == null) {
+                expInt = new ExportInterface();
+            }
+            expInt.insertPatient();   
+        });
+        menuExportar.add(submenuExportarPaciente);
+        JMenuItem submenuExportarCalcificacao = new JMenuItem("Calcificacão");
+        submenuExportarCalcificacao.addActionListener((ActionEvent e) -> {     
+            if(expInt == null) {
+                expInt = new ExportInterface();
+            }
+            expInt.insertCalcification();
+        });
+        menuExportar.add(submenuExportarCalcificacao);
         JMenu menuSobre = new JMenu("Sobre");
         menu.add(menuSobre);
         JMenuItem submenuSobre = new JMenuItem("Sobre");
