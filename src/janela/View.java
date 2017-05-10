@@ -194,7 +194,7 @@ public class View {
             if(expInt == null) {
                 expInt = new ExportInterface();
             }
-            expInt.insertCalcification();
+            expInt.insertCalcification(controller.dados.getExamResult(), getWL(), getWW());
         });
         menuExportar.add(submenuExportarCalcificacao);
         JMenu menuSobre = new JMenu("Sobre");

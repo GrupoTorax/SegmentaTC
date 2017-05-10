@@ -2,7 +2,6 @@ package janela;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.Point;
 import java.awt.Polygon;
 import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
@@ -52,7 +51,7 @@ public class LineTool extends DrawingTool {
         for (int x = bounds.x; x < bounds.x + bounds.width; x++) {
             for (int y = bounds.y; y < bounds.y + bounds.height; y++) {
                 if (polygon.contains(x, y)) {
-                    slice.getBinaryLabel()[x][y] = true;
+                    slice.setPoint(x, y, true);
                 }
             }
         }
@@ -69,7 +68,7 @@ public class LineTool extends DrawingTool {
     }
     
     /**
-     * Converts a list do an array
+     * Converts a list to an array
      * 
      * @param ints
      * @return int[]
