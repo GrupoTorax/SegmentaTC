@@ -69,7 +69,7 @@ public class View {
 
     public void exibe() {
         janela = new JFrame();
-        janela.setTitle("Segmentação automática de órgãos em exames de TC");
+        janela.setTitle("Ferramenta para apoio ao diagnóstico em imagens de TC do tórax");
         janela.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         janela.setBounds(1, 1, 774, 665);
         janela.setLocationRelativeTo(null);

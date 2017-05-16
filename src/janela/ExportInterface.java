@@ -15,7 +15,21 @@ public class ExportInterface {
     private final static Client client = new Client();
        
     public void insertPatient() {
-        System.out.println("Paciente criado: " + client.insertPatient());
+        /*
+        client.insertPatient(1);
+        client.insertPatient(2);
+        client.insertPatient(3);
+        client.insertPatient(4);
+        client.insertPatient(5);
+        */
+        
+        //System.out.println(client.readPatient("1"));
+        
+        client.insertDiagnosticReport("5", 10, 20);
+                
+        //System.out.println(client.readDiagnosticReport("4957"));
+        
+        System.out.println("feito!");
     }
     
     public void insertCalcification(ExamResult exame, int WL, int WW) {
@@ -39,7 +53,8 @@ public class ExportInterface {
                     maior = trabalhoBin[x][y];
                 }
                 
-                if ((trabalhoBin[x][y] < 130) || (trabalhoBin[x][y] > 400) || !pericardio[x][y]) {
+                //if ((trabalhoBin[x][y] < 130) || (trabalhoBin[x][y] > 400) || !pericardio[x][y]) {
+                if ((trabalhoBin[x][y] < 199) || !pericardio[x][y]) {
                     trabalhoBin[x][y] = 0;
                 }else{
                     trabalhoBin[x][y] = 1;
@@ -48,8 +63,8 @@ public class ExportInterface {
             }
         }
         
-        // Minimum Region of Calcification - 0.3% de área de calcificação em relação a área total do pericárdio
-        int mrc = (int) (slice.getStructure(StructureType.HEART).getArea() * 0.003); 
+        // Minimum Region of Calcification - 0.1% de área de calcificação em relação a área total do pericárdio
+        int mrc = (int) (slice.getStructure(StructureType.HEART).getArea() * 0.001); 
         
         System.out.println("Menor: " + menor);
         System.out.println("Maior: " + maior);
@@ -62,14 +77,26 @@ public class ExportInterface {
         BinaryLabelingProcess binaryLabelingProcess = new BinaryLabelingProcess(image);
         binaryLabelingProcess.process();
         System.out.println("Maior label: " + binaryLabelingProcess.getLastLabel());
-        
+        int qtd = 0, area = 0;
         for (int i = 0; i < 1000; i++) {
             if (binaryLabelingProcess.getSize(i) > mrc) {
-                System.out.println("Label: " + i + " Tamanho: " + binaryLabelingProcess.getSize(i) + " u.a");    
+                System.out.println("Label: " + i + " Tamanho: " + binaryLabelingProcess.getSize(i) + " u.a");  
+                qtd++;
+                area+= binaryLabelingProcess.getSize(i);
+                boolean[][] mtz = binaryLabelingProcess.getMatrix(i);
+                for (int ix = 0; ix < mtz.length; ix++) {
+                    for (int iy = 0; iy < mtz[0].length; iy++) {
+                        if (mtz[ix][iy]) {
+                            trabalhoBin[ix][iy] = 255;
+                        }
+                    }
+                }
             }
         }
-        
-        //new VisualizaImagem(trabalhoBin);
+        System.out.println();
+        System.out.println("Qtd total: " + qtd + " Tamanho total: " + area + " u.a");        
+        System.out.println();
+        new VisualizaImagem(trabalhoBin);
         
     }
     

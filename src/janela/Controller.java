@@ -33,7 +33,7 @@ public class Controller {
         prepararSeletorDirArq();
         janela = new View(this);
         janela.exibe();
-        load(new File(getClass().getResource("/diacon").getFile()));
+        load(new File(getClass().getResource("/DICOM").getFile()));
     }
 
     public boolean temExameCarregado() {
@@ -160,9 +160,14 @@ public class Controller {
 //        if (janela.isSegPulmaoDirMarcado()) {
 //            pintaImagem(imagem, dados.getMatrizPulmaoDir(fatia), Color.green);
 //        }
+
+
         for (Structure structure : dados.getStructures()) {
-            pintaImagem(imagem, structure.getSlice(fatia).getBinaryLabel(), structure.getType().getColor());
+            if (structure.getType().getName() == "Heart"){
+                pintaImagem(imagem, structure.getSlice(fatia).getBinaryLabel(), structure.getType().getColor());
+            }
         }
+
         return imagem;
     }
 
