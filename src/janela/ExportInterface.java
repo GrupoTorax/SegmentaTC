@@ -1,5 +1,7 @@
 package janela;
 
+import java.util.concurrent.ThreadLocalRandom;
+import javax.swing.JOptionPane;
 import org.ronnau.fhirclient.Client;
 import org.torax.commons.*;
 import org.torax.orchestration.*;
@@ -14,25 +16,71 @@ public class ExportInterface {
     
     private final static Client client = new Client();
        
+    public void fazConferencia() {
+        System.out.println("Conferência de laudos iniciada...");
+
+        String laudo = JOptionPane.showInputDialog("Laudo a ser conferido: ");
+        
+        int calc_pdi = client.readCalcioPDI(laudo);
+        int calc_pln = client.readCalcioPLN(laudo);
+               
+        String aviso;       
+        if (calc_pdi == calc_pln){
+            if (calc_pdi == 0) {
+                aviso = "OK - Não foram citados pontos de calcificação no laudo e não foram identificados pontos de calcificação nas imagens.";
+            } else {
+                aviso = "OK - Foram citados pontos de calcificação no laudo e foram identificados pontos de calcificação nas imagens.";
+            }
+        } else {
+            if (calc_pdi == 0) {
+                aviso = "REVISAR - Foram citados pontos de calcificação no laudo e não foram identificados pontos de calcificação nas imagens.";
+            } else {
+                if (calc_pln == 0) {
+                    aviso = "REVISAR - Não foram citados pontos de calcificação no laudo e foram identificados pontos de calcificação nas imagens.";
+                } else {
+                    aviso = "REVISAR - A quantidade de pontos de calcificação citados no laudo é diferente da quantidade de pontos encontrada nas imagens.";
+                }
+            }
+        }
+       
+        String msg = aviso + "\n\nLaudo: " + laudo + "\n" + client.readPatient(client.readPatientDR(laudo));
+        
+        JOptionPane.showMessageDialog(null, msg);
+        
+        System.out.println();
+        System.out.println("Calcio PDI: " + calc_pdi);
+        System.out.println("Calcio PLN: " + calc_pln);        
+        
+        
+        //System.out.println(client.readPatient("1"));
+        
+        //System.out.println(client.readDiagnosticReport("4957"));
+        
+        System.out.println("Conferência de laudos finalizada...");
+    }
+    
     public void insertPatient() {
-        /*
+        System.out.println("Inserção de pacientes iniciada...");
         client.insertPatient(1);
         client.insertPatient(2);
         client.insertPatient(3);
         client.insertPatient(4);
         client.insertPatient(5);
-        */
-        
-        //System.out.println(client.readPatient("1"));
-        
-        client.insertDiagnosticReport("5", 10, 20);
-                
-        //System.out.println(client.readDiagnosticReport("4957"));
-        
-        System.out.println("feito!");
+        client.insertPatient(6);        
+        System.out.println("Inserção de pacientes finalizada...");
     }
     
-    public void insertCalcification(ExamResult exame, int WL, int WW) {
+    public void insertReport(ExamResult exame, int WL, int WW) {
+        System.out.println("Inserção de laudo iniciada...");
+        int paciente = ThreadLocalRandom.current().nextInt(1, 6 + 1);
+        int calc_pdi = defineCalcPDI(exame, WL, WW);
+        int calc_pln = defineCalcPLN(paciente);
+        client.insertDiagnosticReport(Integer.toString(paciente), calc_pdi, calc_pln);
+        System.out.println("Inserção de laudo finalizada...");       
+    }
+    
+    
+    private int defineCalcPDI(ExamResult exame, int WL, int WW){
         
         ExamResultSlice slice = exame.getSlice(0);
         boolean[][] pericardio = slice.getStructure(StructureType.HEART).getBinaryLabel();
@@ -98,7 +146,13 @@ public class ExportInterface {
         System.out.println();
         new VisualizaImagem(trabalhoBin);
         
+        return qtd;
     }
+    
+    private int defineCalcPLN(int paciente){
+        return 1;
+    }
+
     
     public static int[][] copyArray(final int[][] array) {
         final int[][] copy = new int[array.length][];

@@ -189,14 +189,22 @@ public class View {
             expInt.insertPatient();   
         });
         menuExportar.add(submenuExportarPaciente);
-        JMenuItem submenuExportarCalcificacao = new JMenuItem("Calcificacão");
-        submenuExportarCalcificacao.addActionListener((ActionEvent e) -> {     
+        JMenuItem submenuExportarLaudo = new JMenuItem("Laudo");
+        submenuExportarLaudo.addActionListener((ActionEvent e) -> {     
             if(expInt == null) {
                 expInt = new ExportInterface();
             }
-            expInt.insertCalcification(controller.dados.getExamResult(), getWL(), getWW());
+            expInt.insertReport(controller.dados.getExamResult(), getWL(), getWW());
         });
-        menuExportar.add(submenuExportarCalcificacao);
+        menuExportar.add(submenuExportarLaudo);
+        JMenuItem submenuExportarConferencia = new JMenuItem("Conferência");
+        submenuExportarConferencia.addActionListener((ActionEvent e) -> {     
+            if(expInt == null) {
+                expInt = new ExportInterface();
+            }
+            expInt.fazConferencia();
+        });
+        menuExportar.add(submenuExportarConferencia);
         JMenu menuSobre = new JMenu("Sobre");
         menu.add(menuSobre);
         JMenuItem submenuSobre = new JMenuItem("Sobre");
