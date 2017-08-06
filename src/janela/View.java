@@ -1,7 +1,6 @@
 package janela;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -11,9 +10,12 @@ import java.awt.event.FocusListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
-import java.awt.image.BufferedImage;
-import javax.swing.ImageIcon;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
+import javax.swing.JComponent;
 import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -26,6 +28,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JSlider;
 import javax.swing.border.EtchedBorder;
 import javax.swing.event.ChangeEvent;
+import org.torax.orchestration.StructureType;
 
 /**
  *
@@ -51,7 +54,7 @@ public class View {
     private JFormattedTextField windowLevel;
     private JFormattedTextField windowWidth;
     private JComboBox templateWLWW;
-    private JLabel sliceCorrente;
+    private ExamSliceView sliceCorrente;
     private JSlider slider;
 
     private JLabel labelNomeArquivo;
@@ -61,10 +64,14 @@ public class View {
     private JLabel labelHU;
     private JLabel labelRGB;
 
+    /** Selected structures */
+    private final Set<StructureType> selected;
+    
     private ExportInterface expInt;
     
     public View(Controller controller) {
         this.controller = controller;
+        selected = new HashSet<>(Arrays.asList(StructureType.values()));
     }
 
     public void exibe() {
@@ -83,12 +90,15 @@ public class View {
         painelCentral = new JPanel(new BorderLayout());
         painelCentral.add(painelImagem, BorderLayout.WEST);
         //painel do rodape, contem os campos do rodape da janela
+        JPanel bottomPanel = new JPanel(new BorderLayout());
         painelRodape = new JPanel();
         painelRodape.setBorder(new EtchedBorder(EtchedBorder.LOWERED));
+        bottomPanel.add(painelRodape);
+        bottomPanel.add(buildPanelStructureSelection(), BorderLayout.EAST);
         //painel principal, contem todos outros paineis (com excecao do painel do frame
         painelPrincipal = new JPanel(new BorderLayout());
         painelPrincipal.add(painelCentral, BorderLayout.CENTER);
-        painelPrincipal.add(painelRodape, BorderLayout.SOUTH);
+        painelPrincipal.add(bottomPanel, BorderLayout.SOUTH);
         //adiciona o painel principal no painel do frame
         janela.getContentPane().add(painelPrincipal, BorderLayout.CENTER);
 
@@ -104,7 +114,8 @@ public class View {
         });
         janela.getContentPane().add(slider, BorderLayout.WEST);
 
-        sliceCorrente = new JLabel();
+        sliceCorrente = new ExamSliceView(null, (type) -> selected.contains(type), getWL(), getWW());
+
         sliceCorrente.setPreferredSize(new Dimension(512, 512));
         sliceCorrente.addMouseMotionListener(new MouseMotionListener() {
             @Override
@@ -272,7 +283,41 @@ public class View {
         painelRodape.add(templateWLWW);
 
     }
+    
+    /**
+     * Builds the panel for selecting visible structures
+     * 
+     * @return JComponent
+     */
+    private JComponent buildPanelStructureSelection() {
+        JPanel panel = new JPanel(new GridLayout(0, 1));
+        for (StructureType value : StructureType.values()) {
+            panel.add(buildCheckStructureSelection(value));
+        }
+        return new JScrollPane(panel);
+    }
 
+    /**
+     * Builds the check-box for showing a structure type
+     * 
+     * @param type
+     * @return JComponent
+     */
+    private JComponent buildCheckStructureSelection(StructureType type) {
+        JCheckBox check = new JCheckBox(type.toString(), selected.contains(type));
+        check.addChangeListener((evt) -> {
+            if (check.isSelected() && !selected.contains(type)) {
+                selected.add(type);
+                sliceCorrente.repaint();
+            }
+            if (!check.isSelected() && selected.contains(type)) {
+                selected.remove(type);
+                sliceCorrente.repaint();
+            }
+        });
+        return check;
+    }
+    
     private void criaInformacoes() {
         JScrollPane sPainelInfo = new JScrollPane();
         painelCentral.add(sPainelInfo, BorderLayout.EAST);
@@ -316,15 +361,15 @@ public class View {
         //MELHORAR ESTE PONTO, A FORMA COMO OBTEM OS DADOS!
         labelHU.setText("  Valor em HU: " + controller.dados.getMatrizOriginal(getValorSlider())[x][y]);
 
-        BufferedImage imagem = new BufferedImage(sliceCorrente.getIcon().getIconWidth(),
-                sliceCorrente.getIcon().getIconHeight(),
-                BufferedImage.TYPE_INT_RGB);
+//        BufferedImage imagem = new BufferedImage(sliceCorrente.getIcon().getIconWidth(),
+//                sliceCorrente.getIcon().getIconHeight(),
+//                BufferedImage.TYPE_INT_RGB);
+//
+//        sliceCorrente.getIcon().paintIcon(null, imagem.getGraphics(), 0, 0);
 
-        sliceCorrente.getIcon().paintIcon(null, imagem.getGraphics(), 0, 0);
+//        Color c = new Color(imagem.getRGB(x, y));
 
-        Color c = new Color(imagem.getRGB(x, y));
-
-        labelRGB.setText("  Valor RGB: " + c.getRed() + ", " + c.getGreen() + ", " + c.getBlue());
+//        labelRGB.setText("  Valor RGB: " + c.getRed() + ", " + c.getGreen() + ", " + c.getBlue());
 
     }
 
@@ -347,8 +392,9 @@ public class View {
     }
 
     void atualizaImagem() {
-        BufferedImage imagem = controller.geraImagem();
-        sliceCorrente.setIcon(new ImageIcon(imagem));
+        sliceCorrente.setSlice(controller.dados.getExamResult().getSlice(getValorSlider()));
+        sliceCorrente.setWl(getWL());
+        sliceCorrente.setWw(getWW());
 
         labelNomeArquivo.setText("  Arquivo: " + controller.dados.getNomeArquivo(getValorSlider()));
         labelIndiceImagem.setText("  Fatia: " + (getValorSlider() + 1) + " / " + controller.dados.getNumeroFatias());

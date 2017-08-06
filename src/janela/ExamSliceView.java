@@ -45,14 +45,19 @@ public class ExamSliceView extends JComponent {
 
     @Override
     public Dimension getPreferredSize() {
+        if (slice == null) {
+            return new Dimension(512, 512);
+        }
         return slice.getExam().getSize();
     }
 
     @Override
     protected void paintComponent(Graphics g) {
         Graphics2D g2d = (Graphics2D) g.create();
-        paintExam(g2d);
-        paintStructures(g2d);
+        if (slice != null) {
+            paintExam(g2d);
+            paintStructures(g2d);
+        }
         g2d.dispose();
     }
 
@@ -107,6 +112,8 @@ public class ExamSliceView extends JComponent {
      */
     public void setSlice(ExamResultSlice slice) {
         this.slice = slice;
+        revalidate();
+        repaint();
     }
 
     /**
@@ -125,6 +132,25 @@ public class ExamSliceView extends JComponent {
      */
     public void setStructureFilter(Predicate<StructureType> structureFilter) {
         this.structureFilter = structureFilter;
+        repaint();
+    }
+
+    public int getWl() {
+        return wl;
+    }
+
+    public void setWl(int wl) {
+        this.wl = wl;
+        repaint();
+    }
+
+    public int getWw() {
+        return ww;
+    }
+
+    public void setWw(int ww) {
+        this.ww = ww;
+        repaint();
     }
 
 }
