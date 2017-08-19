@@ -12,6 +12,7 @@ import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import org.torax.orchestration.Structure;
+import org.torax.orchestration.StructureType;
 
 /**
  *
@@ -124,9 +125,20 @@ public class Controller {
                     BufferedImage gabarito = ImageIO.read(new File(nome));
                     for (int x = 0; x < image.getWidth(); x++) {
                         for (int y = 0; y < image.getHeight(); y++) {
+                            // Só valida as cores das estruturas
+                            boolean achou = false;
+                            for (StructureType value : StructureType.values()) {
+                                if (image.getRGB(x, y) == value.getColor().getRGB()) {
+                                    achou = true;
+                                    break;
+                                }
+                            }
+                            if (!achou) {
+                                continue;
+                            }
                             if (image.getRGB(x, y) != gabarito.getRGB(x, y)) {
-                                throw new Exception("Pixel: " + image.getRGB(x, y)
-                                        + " Gabarito: " + gabarito.getRGB(x, y)
+                                throw new Exception("Pixel: " + Integer.toHexString(image.getRGB(x, y))
+                                        + " Gabarito: " + Integer.toHexString(gabarito.getRGB(x, y))
                                         + " x: " + x + " y:" + y);
                             }
                         }

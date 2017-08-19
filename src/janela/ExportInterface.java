@@ -124,7 +124,8 @@ public class ExportInterface {
         Image image = ImageHelper.create(trabalhoBin, new org.torax.commons.Range<>(-4000, 4000));
         BinaryLabelingProcess binaryLabelingProcess = new BinaryLabelingProcess(image);
         binaryLabelingProcess.process();
-        System.out.println("Maior label: " + binaryLabelingProcess.getLastLabel());
+        // TODO: Sumiu o método:
+//        System.out.println("Maior label: " + binaryLabelingProcess.getLastLabel());
         int qtd = 0, area = 0;
         for (int i = 0; i < 1000; i++) {
             if (binaryLabelingProcess.getSize(i) > mrc) {
