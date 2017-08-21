@@ -116,9 +116,8 @@ public class Controller {
         String path = getClass().getResource("/gabarito").getFile();
         try {
             boolean sucesso = true;
+            long l = System.currentTimeMillis();
             for (int fatia = 0; fatia < dados.getNumeroFatias(); fatia++) {
-                StringBuilder sb = new StringBuilder("Fatia: ");
-                sb.append(fatia);
                 try {
                     String nome = path + "/" + getNomeArquivoBmp(fatia);
                     BufferedImage image = geraImagemComparacao(fatia);
@@ -143,17 +142,18 @@ public class Controller {
                             }
                         }
                     }
-                    sb.append(" sucesso!");
                 } catch (Exception e) {
+                    StringBuilder sb = new StringBuilder("Fatia: ");
+                    sb.append(fatia);
                     sb.append(" Erro! ").append(e.getMessage());
                     sucesso = false;
+                    System.out.println(sb.toString());
                 }
-                System.out.println(sb);
             }
             if (sucesso) {
-                JOptionPane.showMessageDialog(null, "Comparação realizada com sucesso!");
+                JOptionPane.showMessageDialog(null, "Comparação realizada com sucesso em " + (System.currentTimeMillis() - l) + "ms!");
             } else {
-                JOptionPane.showMessageDialog(null, "Comparação realizada com inconsistências!");
+                JOptionPane.showMessageDialog(null, "Comparação realizada com inconsistências em " + (System.currentTimeMillis() - l) + "ms!");
             }
         } catch (Exception e) {
             System.out.println(e);
