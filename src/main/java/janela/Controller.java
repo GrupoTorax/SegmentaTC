@@ -11,6 +11,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import org.paim.commons.BinaryImage;
 import org.paim.orchestration.Structure;
 import org.paim.orchestration.StructureType;
 
@@ -206,10 +207,10 @@ public class Controller {
         return imagem;
     }
 
-    private void pintaImagem(BufferedImage imagem, boolean[][] matrizOrgao, Color cor) {
-        for (int ix = 0; ix < matrizOrgao.length; ix++) {
-            for (int iy = 0; iy < matrizOrgao[0].length; iy++) {
-                if (matrizOrgao[ix][iy]) {
+    private void pintaImagem(BufferedImage imagem, BinaryImage matrizOrgao, Color cor) {
+        for (int ix = 0; ix < matrizOrgao.getWidth(); ix++) {
+            for (int iy = 0; iy < matrizOrgao.getHeight(); iy++) {
+                if (matrizOrgao.get(ix, iy)) {
                     imagem.setRGB(ix, iy, cor.getRGB());
                 }
             }

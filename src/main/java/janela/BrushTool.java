@@ -32,7 +32,7 @@ public class BrushTool extends DrawingTool {
                 if (x < 0 || y < 0 || x >= slice.getWidth() || y >= slice.getHeight()) {
                     continue;
                 }
-                slice.getBinaryLabel()[x][y] = true;
+                slice.getBinaryLabel().set(x, y, true);
             }
         }
     }
@@ -47,7 +47,7 @@ public class BrushTool extends DrawingTool {
                 if (x < 0 || y < 0 || x >= slice.getWidth() || y >= slice.getHeight()) {
                     continue;
                 }
-                slice.getBinaryLabel()[x][y] = true;
+                slice.getBinaryLabel().set(x, y, true);
             }
         }
     }

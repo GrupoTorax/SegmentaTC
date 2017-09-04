@@ -12,6 +12,7 @@ import java.awt.image.BufferedImage;
 import java.util.Map;
 import java.util.function.Predicate;
 import javax.swing.JComponent;
+import org.paim.commons.BinaryImage;
 import org.paim.orchestration.ExamResultSlice;
 import org.paim.orchestration.StructureSlice;
 import org.paim.orchestration.StructureType;
@@ -84,11 +85,11 @@ public class ExamSliceView extends JComponent {
     }
 
     private void paintStructure(Graphics2D g2d, StructureType type, StructureSlice value) {
-        boolean[][] matrix = value.getBinaryLabel();
-        BufferedImage image = new BufferedImage(matrix.length, matrix[0].length, BufferedImage.TYPE_INT_ARGB);
-        for (int ix = 0; ix < matrix.length; ix++) {
-            for (int iy = 0; iy < matrix[0].length; iy++) {
-                if (matrix[ix][iy]) {
+        BinaryImage matrix = value.getBinaryLabel();
+        BufferedImage image = new BufferedImage(matrix.getWidth(), matrix.getHeight(), BufferedImage.TYPE_INT_ARGB);
+        for (int ix = 0; ix < matrix.getWidth(); ix++) {
+            for (int iy = 0; iy < matrix.getHeight(); iy++) {
+                if (matrix.get(ix, iy)) {
                     image.setRGB(ix, iy, type.getColor().getRGB());
                 }
             }

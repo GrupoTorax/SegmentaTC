@@ -2,6 +2,7 @@ package janela;
 
 import java.util.concurrent.ThreadLocalRandom;
 import javax.swing.JOptionPane;
+import org.paim.commons.BinaryImage;
 import org.paim.commons.Image;
 import org.paim.commons.ImageHelper;
 import org.paim.orchestration.ExamResult;
@@ -86,7 +87,7 @@ public class ExportInterface {
     private int defineCalcPDI(ExamResult exame, int WL, int WW){
         
         ExamResultSlice slice = exame.getSlice(0);
-        boolean[][] pericardio = slice.getStructure(StructureType.HEART).getBinaryLabel();
+        BinaryImage pericardio = slice.getStructure(StructureType.HEART).getBinaryLabel();
         int[][] matrizHU = slice.getExam().getCoefficientMatrix();
         
         int menor = 0;
@@ -105,7 +106,7 @@ public class ExportInterface {
                 }
                 
                 //if ((trabalhoBin[x][y] < 130) || (trabalhoBin[x][y] > 400) || !pericardio[x][y]) {
-                if ((trabalhoBin[x][y] < 199) || !pericardio[x][y]) {
+                if ((trabalhoBin[x][y] < 199) || !pericardio.get(x, y)) {
                     trabalhoBin[x][y] = 0;
                 }else{
                     trabalhoBin[x][y] = 1;
