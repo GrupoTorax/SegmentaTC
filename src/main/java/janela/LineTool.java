@@ -45,7 +45,6 @@ public class LineTool extends DrawingTool {
      * Closes the shape
      */
     private void close() {
-        System.out.println("close");
         Polygon polygon = new Polygon(array(xPoints), array(yPoints), xPoints.size());
         Rectangle bounds = polygon.getBounds();
         for (int x = bounds.x; x < bounds.x + bounds.width; x++) {
