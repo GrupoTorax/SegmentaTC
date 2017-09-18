@@ -21,6 +21,9 @@ public class ExportInterface {
     private final static Client client = new Client();
        
     public void fazConferencia() {
+
+        System.out.println("ATENÇÃO: o recurso de conferência foi desabilitado para evitar modificar o repositório!");        
+        /*
         System.out.println("Conferência de laudos iniciada...");
 
         String laudo = JOptionPane.showInputDialog("Laudo a ser conferido: ");
@@ -61,29 +64,97 @@ public class ExportInterface {
         //System.out.println(client.readDiagnosticReport("4957"));
         
         System.out.println("Conferência de laudos finalizada...");
+        */
     }
     
+    public void geraPreLaudo() {
+
+        System.out.println("Geração de laudo preliminar iniciada...");
+
+        String paciente = JOptionPane.showInputDialog("Paciente: ");
+        String DRs[] = client.readDRs(paciente);
+
+        for (int i = 0; i < 5; i++) {
+            if (DRs[i] == null) {
+                break;
+            }
+            
+            int calcPDI = client.readCalcioPDI(DRs[i]);
+            if (calcPDI != 999) {
+                System.out.println("CalcioPDI: " + calcPDI);
+            }
+            
+            int calcPLN = client.readCalcioPLN(DRs[i]);
+            if (calcPLN != 999) {
+                System.out.println("CalcioPLN: " + calcPLN);
+            }
+            
+            double temp = client.readObservationTemp(DRs[i]);
+            if (temp != 999) {
+                System.out.println("Temperatura corporal: " + temp);
+            }
+            
+            String pres = client.readObservationPress(DRs[i]);
+            if (!pres.equals("999")) {
+                System.out.println("Pressão arterial: " + pres);
+            }
+            
+            int freq = client.readObservationFreq(DRs[i]);
+            if (freq != 999) {
+                System.out.println("Frequência cardíaca: " + freq);
+            }            
+        }
+        
+        System.out.println("Geração de laudo preliminar finalizada...");
+        
+    }        
+    
     public void insertPatient() {
+        System.out.println("ATENÇÃO: nenhum paciente será inserido pois o recurso foi desabilitado para evitar modificar o repositório!");        
+        /*
         System.out.println("Inserção de pacientes iniciada...");
         client.insertPatient(1);
         client.insertPatient(2);
         client.insertPatient(3);
         client.insertPatient(4);
         client.insertPatient(5);
-        client.insertPatient(6);        
         System.out.println("Inserção de pacientes finalizada...");
+        */
     }
     
-    public void insertReport(ExamResult exame, int WL, int WW) {
-        System.out.println("Inserção de laudo iniciada...");
-        int paciente = ThreadLocalRandom.current().nextInt(1, 6 + 1);
-        int calc_pdi = defineCalcPDI(exame, WL, WW);
-        int calc_pln = defineCalcPLN(paciente);
+    public void insertReportProt1(ExamResult exame, int WL, int WW) {
+        System.out.println("ATENÇÃO: não será inserido o DiagnosticReport do protótipo 1 pois o recurso foi desabilitado para evitar modificar o repositório!");
+        /*
+        System.out.println("Inserção de laudo pr 1 iniciada...");
+        //int paciente = ThreadLocalRandom.current().nextInt(1, 5 + 1);
+        //int calc_pdi = defineCalcPDI(exame, WL, WW);
+        //int calc_pln = defineCalcPLN(paciente);
+        
+        int paciente = 35054;
+        int calc_pdi = 0;
+        int calc_pln = 0;
+        
         client.insertDiagnosticReport(Integer.toString(paciente), calc_pdi, calc_pln);
         System.out.println("Inserção de laudo finalizada...");       
+        */
     }
     
-    
+    public void insertReportProt2() {
+        System.out.println("ATENÇÃO: não será inserido o DiagnosticReport do protótipo 2 pois o recurso foi desabilitado para evitar modificar o repositório!");
+        /*
+        System.out.println("Inserção de laudo pr 2 iniciada...");
+
+        //int paciente = ThreadLocalRandom.current().nextInt(1, 5 + 1);
+        //client.insertDiagnosticReport(Integer.toString(paciente), 10, 20, 30);              
+        
+        client.insertDiagnosticReport("30054", 36.4, "166/121", 87);       
+        client.insertDiagnosticReport("35052", 37.1, "145/85", 71);       
+        client.insertDiagnosticReport("30055", 36.8, "119/80", 57);       
+               
+        System.out.println("Inserção de laudo finalizada...");
+        */
+    }      
+        
     private int defineCalcPDI(ExamResult exame, int WL, int WW){
         
         ExamResultSlice slice = exame.getSlice(0);
@@ -94,7 +165,7 @@ public class ExportInterface {
         int maior = 0;
         int quantidade = 0;
         
-        // pontos com cálcio são todos aqueles entre 130 e 400 HU, somente dentro da área do pericardio
+        // pontos com cálcio são todos aqueles acima de 130 HU, somente dentro da área do pericardio
         int[][] trabalhoBin = copyArray(matrizHU);
         for (int x = 0; x < matrizHU.length; x++) {
             for (int y = 0; y < matrizHU[0].length; y++) {
@@ -106,7 +177,7 @@ public class ExportInterface {
                 }
                 
                 //if ((trabalhoBin[x][y] < 130) || (trabalhoBin[x][y] > 400) || !pericardio[x][y]) {
-                if ((trabalhoBin[x][y] < 199) || !pericardio.get(x, y)) {
+                if ((trabalhoBin[x][y] < 130) || !pericardio.get(x, y)) {
                     trabalhoBin[x][y] = 0;
                 }else{
                     trabalhoBin[x][y] = 1;
@@ -117,6 +188,7 @@ public class ExportInterface {
         
         // Minimum Region of Calcification - 0.1% de área de calcificação em relação a área total do pericárdio
         int mrc = (int) (slice.getStructure(StructureType.HEART).getArea() * 0.001); 
+        mrc = 2;
         
         System.out.println("Menor: " + menor);
         System.out.println("Maior: " + maior);
@@ -128,8 +200,7 @@ public class ExportInterface {
         Image image = ImageHelper.create(trabalhoBin, new org.paim.commons.Range<>(-4000, 4000));
         BinaryLabelingProcess binaryLabelingProcess = new BinaryLabelingProcess(image);
         binaryLabelingProcess.process();
-        // TODO: Sumiu o método:
-//        System.out.println("Maior label: " + binaryLabelingProcess.getLastLabel());
+        System.out.println("Maior label: " + binaryLabelingProcess.getLastLabel());
         int qtd = 0, area = 0;
         for (int i = 0; i < 1000; i++) {
             if (binaryLabelingProcess.getSize(i) > mrc) {
@@ -155,6 +226,17 @@ public class ExportInterface {
     }
     
     private int defineCalcPLN(int paciente){
+        
+        String exame = new StringBuilder().append("D:\\Prototypes\\Laudos_PLN\\laudo").append(paciente).append(".xml").toString();
+
+        System.out.println("Exame: " + exame);            
+        
+        // - Todas as frases que não contém o termo “calci” são desconsideradas
+        // - Nas frases restantes, os substantivos são verificados, buscando validar se estão relacionados às regiões anatômicas que devem ser consideradas. Essa ação é realizada através do léxico UMLS Metathesaurus Browser, onde são retornados termos equivalentes ao avaliado, reduzindo assim a lista de regiões anatômicas de interesse que a aplicação precisa manter
+        // - A última etapa consiste em verificar se a informação não está sendo negada. Para isso, são executadas buscas por termos que indicam essa condição nas frases restantes, como, por exemplo, “sem”, “não”, “ausência”, “ausente”, entre outros. Se o trecho não estiver sendo negado, a referência à presença de calcificação é considerada válida e essa informação é inserida no repositório de características
+       
+        
+        
         return 1;
     }
 

@@ -200,14 +200,22 @@ public class View {
             expInt.insertPatient();   
         });
         menuExportar.add(submenuExportarPaciente);
-        JMenuItem submenuExportarLaudo = new JMenuItem("Laudo");
-        submenuExportarLaudo.addActionListener((ActionEvent e) -> {     
+        JMenuItem submenuExportarLaudoPr1 = new JMenuItem("Laudo Pr1");
+        submenuExportarLaudoPr1.addActionListener((ActionEvent e) -> {     
             if(expInt == null) {
                 expInt = new ExportInterface();
             }
-            expInt.insertReport(controller.dados.getExamResult(), getWL(), getWW());
+            expInt.insertReportProt1(controller.dados.getExamResult(), getWL(), getWW());
         });
-        menuExportar.add(submenuExportarLaudo);
+        menuExportar.add(submenuExportarLaudoPr1);
+        JMenuItem submenuExportarLaudoPr2 = new JMenuItem("Laudo Pr2");
+        submenuExportarLaudoPr2.addActionListener((ActionEvent e) -> {     
+            if(expInt == null) {
+                expInt = new ExportInterface();
+            }
+            expInt.insertReportProt2();
+        });
+        menuExportar.add(submenuExportarLaudoPr2);
         JMenuItem submenuExportarConferencia = new JMenuItem("Conferência");
         submenuExportarConferencia.addActionListener((ActionEvent e) -> {     
             if(expInt == null) {
@@ -216,6 +224,14 @@ public class View {
             expInt.fazConferencia();
         });
         menuExportar.add(submenuExportarConferencia);
+        JMenuItem submenuGeracao = new JMenuItem("Geração");
+        submenuGeracao.addActionListener((ActionEvent e) -> {     
+            if(expInt == null) {
+                expInt = new ExportInterface();
+            }
+            expInt.geraPreLaudo();
+        });
+        menuExportar.add(submenuGeracao);
         JMenu menuSobre = new JMenu("Sobre");
         menu.add(menuSobre);
         JMenuItem submenuSobre = new JMenuItem("Sobre");
