@@ -72,8 +72,13 @@ public class ExportInterface {
         System.out.println("Geração de laudo preliminar iniciada...");
 
         String paciente = JOptionPane.showInputDialog("Paciente: ");
-        String DRs[] = client.readDRs(paciente);
 
+        System.out.println("Laudo parcial\n");
+        System.out.println(client.readPatient(paciente));
+        System.out.println("\nObservações:\n");
+        
+        String DRs[] = client.readDRs(paciente);
+       
         for (int i = 0; i < 5; i++) {
             if (DRs[i] == null) {
                 break;
@@ -81,31 +86,30 @@ public class ExportInterface {
             
             int calcPDI = client.readCalcioPDI(DRs[i]);
             if (calcPDI != 999) {
-                System.out.println("CalcioPDI: " + calcPDI);
-            }
-            
-            int calcPLN = client.readCalcioPLN(DRs[i]);
-            if (calcPLN != 999) {
-                System.out.println("CalcioPLN: " + calcPLN);
+                if (calcPDI == 0) {
+                    System.out.println("Não foram detectados pontos de calcificação na região cardíaca.");
+                } else {
+                    System.out.println("Foram detectados pontos de calcificação na região cardíaca.");
+                }
             }
             
             double temp = client.readObservationTemp(DRs[i]);
             if (temp != 999) {
-                System.out.println("Temperatura corporal: " + temp);
+                System.out.println("Temperatura corporal: " + temp + " ºC.");
             }
             
             String pres = client.readObservationPress(DRs[i]);
             if (!pres.equals("999")) {
-                System.out.println("Pressão arterial: " + pres);
+                System.out.println("Pressão arterial: " + pres + " mmHg.");
             }
             
             int freq = client.readObservationFreq(DRs[i]);
             if (freq != 999) {
-                System.out.println("Frequência cardíaca: " + freq);
+                System.out.println("Frequência cardíaca: " + freq + " bpm.");
             }            
         }
         
-        System.out.println("Geração de laudo preliminar finalizada...");
+        System.out.println("\n\nGeração de laudo preliminar finalizada...");
         
     }        
     
