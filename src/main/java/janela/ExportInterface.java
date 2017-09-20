@@ -95,12 +95,35 @@ public class ExportInterface {
             
             double temp = client.readObservationTemp(DRs[i]);
             if (temp != 999) {
-                System.out.println("Temperatura corporal: " + temp + " ºC.");
+                if (temp <= 37.5) {
+                System.out.println("Temperatura normal (" + temp + " ºC).");
+                } else {
+                System.out.println("Febre (" + temp + " ºC).");                    
+                }
             }
             
             String pres = client.readObservationPress(DRs[i]);
             if (!pres.equals("999")) {
-                System.out.println("Pressão arterial: " + pres + " mmHg.");
+                String[] valores = pres.split("/");
+                int systolic = Integer.parseInt(valores[0]);
+                int diastolic = Integer.parseInt(valores[1]);
+                if (systolic > 180 || diastolic > 110) {
+                    System.out.println("Crise hipertensiva (" + pres + " mmHg).");
+                } else {
+                    if (systolic >= 160 || diastolic >= 100) {
+                        System.out.println("Hipertensão estágio 2 (" + pres + " mmHg).");
+                    } else {
+                        if (systolic >= 140 || diastolic >= 90) {
+                            System.out.println("Hipertensão estágio 1 (" + pres + " mmHg).");                    
+                        } else {
+                            if (systolic >= 120 || diastolic >= 80) {
+                                System.out.println("Pré-hipertensão (" + pres + " mmHg).");                    
+                            } else {
+                                System.out.println("Pressão arterial normal (" + pres + " mmHg).");
+                            }
+                        }
+                    }
+                }                
             }
             
             int freq = client.readObservationFreq(DRs[i]);
