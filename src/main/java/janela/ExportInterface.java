@@ -1,6 +1,8 @@
 package janela;
 
-import java.util.concurrent.ThreadLocalRandom;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.PrintWriter;
 import javax.swing.JOptionPane;
 import org.paim.commons.BinaryImage;
 import org.paim.commons.Image;
@@ -67,15 +69,19 @@ public class ExportInterface {
         */
     }
     
-    public void geraPreLaudo() {
+    public void geraPreLaudo() throws FileNotFoundException, IOException {
 
         System.out.println("Geração de laudo preliminar iniciada...");
 
         String paciente = JOptionPane.showInputDialog("Paciente: ");
 
-        System.out.println("Laudo parcial\n");
-        System.out.println(client.readPatient(paciente));
-        System.out.println("\nObservações:\n");
+        PrintWriter pw = new PrintWriter(System.getProperty("user.home") + "/Desktop/Laudo_" + paciente + ".txt");      
+        
+        pw.println("Laudo parcial\n");
+        pw.println();
+        pw.println(client.readPatient(paciente));
+        pw.println();
+        pw.println("Observações:");
         
         String DRs[] = client.readDRs(paciente);
        
@@ -87,18 +93,18 @@ public class ExportInterface {
             int calcPDI = client.readCalcioPDI(DRs[i]);
             if (calcPDI != 999) {
                 if (calcPDI == 0) {
-                    System.out.println("Não foram detectados pontos de calcificação na região cardíaca.");
+                    pw.println("Não foram detectados pontos de calcificação na região cardíaca.");
                 } else {
-                    System.out.println("Foram detectados pontos de calcificação na região cardíaca.");
+                    pw.println("Foram detectados pontos de calcificação na região cardíaca.");
                 }
             }
             
             double temp = client.readObservationTemp(DRs[i]);
             if (temp != 999) {
                 if (temp <= 37.5) {
-                System.out.println("Temperatura normal (" + temp + " ºC).");
+                pw.println("Temperatura normal (" + temp + " ºC).");
                 } else {
-                System.out.println("Febre (" + temp + " ºC).");                    
+                pw.println("Febre (" + temp + " ºC).");                    
                 }
             }
             
@@ -108,18 +114,18 @@ public class ExportInterface {
                 int systolic = Integer.parseInt(valores[0]);
                 int diastolic = Integer.parseInt(valores[1]);
                 if (systolic > 180 || diastolic > 110) {
-                    System.out.println("Crise hipertensiva (" + pres + " mmHg).");
+                    pw.println("Crise hipertensiva (" + pres + " mmHg).");
                 } else {
                     if (systolic >= 160 || diastolic >= 100) {
-                        System.out.println("Hipertensão estágio 2 (" + pres + " mmHg).");
+                        pw.println("Hipertensão estágio 2 (" + pres + " mmHg).");
                     } else {
                         if (systolic >= 140 || diastolic >= 90) {
-                            System.out.println("Hipertensão estágio 1 (" + pres + " mmHg).");                    
+                            pw.println("Hipertensão estágio 1 (" + pres + " mmHg).");                    
                         } else {
                             if (systolic >= 120 || diastolic >= 80) {
-                                System.out.println("Pré-hipertensão (" + pres + " mmHg).");                    
+                                pw.println("Pré-hipertensão (" + pres + " mmHg).");                    
                             } else {
-                                System.out.println("Pressão arterial normal (" + pres + " mmHg).");
+                                pw.println("Pressão arterial normal (" + pres + " mmHg).");
                             }
                         }
                     }
@@ -128,10 +134,13 @@ public class ExportInterface {
             
             int freq = client.readObservationFreq(DRs[i]);
             if (freq != 999) {
-                System.out.println("Frequência cardíaca: " + freq + " bpm.");
+                pw.println("Frequência cardíaca: " + freq + " bpm.");
             }            
         }
-        
+
+        pw.flush();
+        pw.close();
+       
         System.out.println("\n\nGeração de laudo preliminar finalizada...");
         
     }        
@@ -261,9 +270,7 @@ public class ExportInterface {
         // - Todas as frases que não contém o termo “calci” são desconsideradas
         // - Nas frases restantes, os substantivos são verificados, buscando validar se estão relacionados às regiões anatômicas que devem ser consideradas. Essa ação é realizada através do léxico UMLS Metathesaurus Browser, onde são retornados termos equivalentes ao avaliado, reduzindo assim a lista de regiões anatômicas de interesse que a aplicação precisa manter
         // - A última etapa consiste em verificar se a informação não está sendo negada. Para isso, são executadas buscas por termos que indicam essa condição nas frases restantes, como, por exemplo, “sem”, “não”, “ausência”, “ausente”, entre outros. Se o trecho não estiver sendo negado, a referência à presença de calcificação é considerada válida e essa informação é inserida no repositório de características
-       
-        
-        
+
         return 1;
     }
 
