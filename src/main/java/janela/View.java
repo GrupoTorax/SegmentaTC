@@ -10,9 +10,12 @@ import java.awt.event.FocusListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
@@ -229,7 +232,11 @@ public class View {
             if(expInt == null) {
                 expInt = new ExportInterface();
             }
-            expInt.geraPreLaudo();
+            try {
+                expInt.geraPreLaudo();
+            } catch (IOException ex) {
+                Logger.getLogger(View.class.getName()).log(Level.SEVERE, null, ex);
+            }
         });
         menuExportar.add(submenuGeracao);
         JMenu menuSobre = new JMenu("Sobre");
