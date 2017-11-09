@@ -70,8 +70,6 @@ public class View {
     /** Selected structures */
     private final Set<StructureType> selected;
     
-    private ExportInterface expInt;
-    
     public View(Controller controller) {
         this.controller = controller;
         selected = new HashSet<>(Arrays.asList(StructureType.values()));
@@ -193,52 +191,7 @@ public class View {
             atualizaImagem();
         });
         menuEditar.add(submenuEditarEstruturas);  
-        JMenu menuExportar = new JMenu("Exportar");
-        menu.add(menuExportar);
-        JMenuItem submenuExportarPaciente = new JMenuItem("Paciente");
-        submenuExportarPaciente.addActionListener((ActionEvent e) -> {   
-            if(expInt == null) {
-                expInt = new ExportInterface();
-            }
-            expInt.insertPatient();   
-        });
-        menuExportar.add(submenuExportarPaciente);
-        JMenuItem submenuExportarLaudoPr1 = new JMenuItem("Laudo Pr1");
-        submenuExportarLaudoPr1.addActionListener((ActionEvent e) -> {     
-            if(expInt == null) {
-                expInt = new ExportInterface();
-            }
-            expInt.insertReportProt1(controller.dados.getExamResult(), getWL(), getWW());
-        });
-        menuExportar.add(submenuExportarLaudoPr1);
-        JMenuItem submenuExportarLaudoPr2 = new JMenuItem("Laudo Pr2");
-        submenuExportarLaudoPr2.addActionListener((ActionEvent e) -> {     
-            if(expInt == null) {
-                expInt = new ExportInterface();
-            }
-            expInt.insertReportProt2();
-        });
-        menuExportar.add(submenuExportarLaudoPr2);
-        JMenuItem submenuExportarConferencia = new JMenuItem("Conferência");
-        submenuExportarConferencia.addActionListener((ActionEvent e) -> {     
-            if(expInt == null) {
-                expInt = new ExportInterface();
-            }
-            expInt.fazConferencia();
-        });
-        menuExportar.add(submenuExportarConferencia);
-        JMenuItem submenuGeracao = new JMenuItem("Geração");
-        submenuGeracao.addActionListener((ActionEvent e) -> {     
-            if(expInt == null) {
-                expInt = new ExportInterface();
-            }
-            try {
-                expInt.geraPreLaudo();
-            } catch (IOException ex) {
-                Logger.getLogger(View.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        });
-        menuExportar.add(submenuGeracao);
+  
         JMenu menuSobre = new JMenu("Sobre");
         menu.add(menuSobre);
         JMenuItem submenuSobre = new JMenuItem("Sobre");
