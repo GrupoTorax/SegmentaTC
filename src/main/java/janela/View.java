@@ -1,5 +1,8 @@
 package janela;
 
+import gabaritos.Template;
+import gabaritos.TemplateEditorPanel;
+import gabaritos.TemplateManager;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GridLayout;
@@ -8,14 +11,13 @@ import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.ItemEvent;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
-import java.io.IOException;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
@@ -29,6 +31,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSlider;
+import javax.swing.KeyStroke;
 import javax.swing.border.EtchedBorder;
 import javax.swing.event.ChangeEvent;
 import org.paim.orchestration.StructureType;
@@ -191,6 +194,15 @@ public class View {
             atualizaImagem();
         });
         menuEditar.add(submenuEditarEstruturas);  
+  
+        JMenu menuTestes = new JMenu("Testes");
+        menu.add(menuTestes);
+        JMenuItem submenuEditarGabaritos = new JMenuItem("Editar gabaritos");
+        submenuEditarGabaritos.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_G, KeyEvent.CTRL_MASK));
+        submenuEditarGabaritos.addActionListener((ActionEvent e) -> {
+            TemplateManager.showDialog();
+        });
+        menuTestes.add(submenuEditarGabaritos);  
   
         JMenu menuSobre = new JMenu("Sobre");
         menu.add(menuSobre);

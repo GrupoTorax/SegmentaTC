@@ -1,0 +1,18 @@
+{
+    "templates": [
+        {
+            "id": 0,
+            "sequence": 0,
+            "author": "Nicolau",
+            "slices": [
+            ]
+        },
+        {
+            "id": 1,
+            "sequence": 0,
+            "author": "Marinex",
+            "slices": [
+            ]
+        }
+    ]
+}
