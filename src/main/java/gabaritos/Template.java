@@ -1,8 +1,10 @@
 package gabaritos;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Template
@@ -18,7 +20,7 @@ public class Template {
     /** Template's creation */
     private final Date creation;
     /** Template's slices */
-    private final List<SliceTemplate> slices;
+    private final Map<String, SliceTemplate> slices;
 
     /**
      * Creates a new template
@@ -33,7 +35,7 @@ public class Template {
         this.sequence = sequence;
         this.author = author;
         this.creation = creation;
-        this.slices = new ArrayList<>();
+        this.slices = new HashMap<>();
     }
 
     /**
@@ -75,10 +77,25 @@ public class Template {
     /**
      * Returns the template slices
      * 
-     * @return List
+     * @return String
      */
-    public List<SliceTemplate> getSlices() {
-        return slices;
+    public Map<String, SliceTemplate> getSlices() {
+        return Collections.unmodifiableMap(slices);
+    }
+    
+    /**
+     * Returns a slice template, or creates a new if not existent
+     * 
+     * @param key
+     * @return SliceTemplate
+     */
+    public SliceTemplate getOrCreateSlice(String key) {
+        SliceTemplate template = slices.get(key);
+        if (template == null) {
+            template = new SliceTemplate(new Date());
+            slices.put(key, template);
+        }
+        return template;
     }
 
 }

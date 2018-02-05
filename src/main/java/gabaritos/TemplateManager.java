@@ -94,7 +94,7 @@ public class TemplateManager extends JPanel {
     private JComponent buildEditTemplateButton(Template template) {
         JButton button = new JButton("E");
         button.addActionListener((e) -> {
-            TemplateEditorPanel.showDialog(template);
+            TemplateEditorPanel.showDialog(model, template);
         });
         return button;
     }

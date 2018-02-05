@@ -1,5 +1,6 @@
 package gabaritos;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -41,7 +42,18 @@ public class SliceTemplate {
      * @return Map
      */
     public Map<StructureType, BinaryImage> getStructures() {
-        return new HashMap<>(structures);
+        return Collections.unmodifiableMap(structures);
     }
 
+    /**
+     * Adds or replaces the image linked to the structure type
+     * 
+     * @param type
+     * @param image
+     * @return BinaryImage
+     */
+    public BinaryImage putStructure(StructureType type, BinaryImage image) {
+        return structures.put(type, image);
+    }
+    
 }
