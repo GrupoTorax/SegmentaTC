@@ -10,10 +10,13 @@ import java.awt.event.MouseMotionListener;
 import javax.swing.AbstractAction;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
+import org.paim.commons.ImageFactory;
 import org.paim.orchestration.ExamResultSlice;
+import org.paim.orchestration.StructureSlice;
 import org.paim.orchestration.StructureType;
 
 /**
@@ -29,6 +32,7 @@ public class StructureDrawPanel extends JPanel {
     private ExamSliceView view;
     /** Drawing tool */
     private DrawingTool drawingTool;
+    private JPanel toolsPanel;
     private int wl;
     private int ww;
     
@@ -42,7 +46,7 @@ public class StructureDrawPanel extends JPanel {
     public StructureDrawPanel(ExamResultSlice slice, int wl, int ww) {
         super();
         this.slice = slice;
-        this.type = StructureType.HEART;
+        this.type = StructureType.values()[0];
         this.drawingTool = new BrushTool(slice.getStructure(type));
         this.wl = wl;
         this.ww = ww;
@@ -56,6 +60,7 @@ public class StructureDrawPanel extends JPanel {
         setLayout(new BorderLayout());
         add(buildDrawingPanel());
         add(buildToolsPanel(), BorderLayout.EAST);
+        add(buildStructureSelector(), BorderLayout.SOUTH);
     }
 
     /**
@@ -64,7 +69,7 @@ public class StructureDrawPanel extends JPanel {
      * @return JComponent
      */
     private JComponent buildDrawingPanel() {
-        view = new ExamSliceView(slice, (structure) -> { return structure == type; }, wl, ww) {
+        view = new ExamSliceView(slice, (structure) -> structure == type, wl, ww) {
             @Override
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
@@ -85,11 +90,38 @@ public class StructureDrawPanel extends JPanel {
      * @return JComponent
      */
     private JComponent buildToolsPanel() {
-        JPanel panel = new JPanel();
-        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-        panel.add(new JButton(new ChangeToolAction(new BrushTool(slice.getStructure(type)))));
-        panel.add(new JButton(new ChangeToolAction(new LineTool(slice.getStructure(type)))));
-        return panel;
+        toolsPanel = new JPanel();
+        toolsPanel.setLayout(new BoxLayout(toolsPanel, BoxLayout.Y_AXIS));
+        updateToolsPanel();
+        return toolsPanel;
+    }
+    
+    /**
+     * Update the tools panel
+     */
+    private void updateToolsPanel() {
+        toolsPanel.removeAll();
+        toolsPanel.add(new JButton(new ChangeToolAction(new BrushTool(slice.getStructure(type)))));
+        toolsPanel.add(new JButton(new ChangeToolAction(new LineTool(slice.getStructure(type)))));
+        toolsPanel.add(new JButton(new ClearAction(slice.getStructure(type))));
+        toolsPanel.revalidate();
+        drawingTool = new BrushTool(slice.getStructure(type));
+    }
+    
+    /**
+     * Creates the structure type selector
+     * 
+     * @return JComponent
+     */
+    private JComponent buildStructureSelector() {
+        JComboBox<StructureType> selector = new JComboBox<>(StructureType.values());
+        selector.addItemListener((evt) -> {
+            this.type = (StructureType) selector.getSelectedItem();
+            updateToolsPanel();
+            view.setStructureFilter((structure) -> structure == type);
+            view.repaint();
+        });
+        return selector;
     }
     
     /**
@@ -102,6 +134,31 @@ public class StructureDrawPanel extends JPanel {
         dialog.setLocationRelativeTo(null);
         dialog.pack();
         dialog.setVisible(true);
+    }
+
+    /**
+     * Clear the whole drawing
+     */
+    public class ClearAction extends AbstractAction {
+
+        /** Slice to be cleared */
+        private final StructureSlice slice;
+        
+        /**
+         * Creates the action
+         * 
+         * @param slice 
+         */
+        public ClearAction(StructureSlice slice) {
+            super("Clear");
+            this.slice = slice;
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            slice.setBinaryLabel(ImageFactory.buildBinaryImage(slice.getWidth(), slice.getHeight()));
+        }
+        
     }
 
     /**

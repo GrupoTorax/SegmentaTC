@@ -43,7 +43,12 @@ public class TemplateEditorController {
     public void saveChanges() {
         String currentSliceFile = currentResultSlice.getExam().getSourceFile().getName();
         SliceTemplate slice = template.getOrCreateSlice(currentSliceFile);
-        slice.putStructure(StructureType.HEART, currentResultSlice.getStructures().get(StructureType.HEART).getBinaryLabel());
+        for (StructureType type : StructureType.values()) {
+            StructureSlice struct = currentResultSlice.getStructures().get(type);
+            if (struct != null) {
+                slice.putStructure(type, struct.getBinaryLabel());
+            }
+        }
         TemplateModelDao.persist(model);
     }
 
@@ -60,17 +65,27 @@ public class TemplateEditorController {
         return data;
     }
     
+    /**
+     * Updates the current slice
+     * 
+     * @param index
+     * @return ExamResultSlice
+     */
     public ExamResultSlice updateCurrentSlice(int index) {
         ExamSlice slice = testModel.getSlices().get(index);
         String sliceName = slice.getSourceFile().getName();
         Map<StructureType, StructureSlice> map = new HashMap<>();
-        BinaryImage image = ImageFactory.buildBinaryImage(slice.getColumns(), slice.getRows());
-        if (template.getSlices().containsKey(sliceName)) {
-            currentSlice = template.getSlices().get(sliceName);
-            image = currentSlice.getStructures().get(StructureType.HEART);
-            image = new BinaryImage(image);
+        for (StructureType type : StructureType.values()) {
+            BinaryImage image = ImageFactory.buildBinaryImage(slice.getColumns(), slice.getRows());
+            if (template.getSlices().containsKey(sliceName)) {
+                currentSlice = template.getSlices().get(sliceName);
+                BinaryImage theImage = currentSlice.getStructures().get(type);
+                if (theImage != null) {
+                    image = new BinaryImage(theImage);
+                }
+            }
+            map.put(type, new StructureSlice(image));
         }
-        map.put(StructureType.HEART, new StructureSlice(image));
         currentResultSlice = new ExamResultSlice(map, slice);
         return currentResultSlice;
     }
