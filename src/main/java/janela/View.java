@@ -201,18 +201,6 @@ public class View {
         });
         menuTestes.add(submenuEditarGabaritos);  
   
-        JMenu menuSobre = new JMenu("Sobre");
-        menu.add(menuSobre);
-        JMenuItem submenuSobre = new JMenuItem("Sobre");
-        submenuSobre.addActionListener((ActionEvent e) -> {
-            JOptionPane.showMessageDialog(null, "Universidade Feevale\n\n"
-                    + "Ciência da Computação\n\n"
-                    + "Trabalho de Conclusão de Curso\n\n"
-                    + "Aluno: Rodrigo Freiberger Rönnau\n\n"
-                    + "Orientadora: Marta Rosecler Bez\n\n"
-                    + "Coorientador: Jéferson Cristiano Flores", "Sobre", JOptionPane.INFORMATION_MESSAGE);
-        });
-        menuSobre.add(submenuSobre);
         janela.setJMenuBar(menu);
     }
 
