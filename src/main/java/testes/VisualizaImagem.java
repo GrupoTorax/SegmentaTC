@@ -7,6 +7,7 @@ import javax.swing.JLabel;
 import org.paim.commons.Exam;
 
 /**
+ *
  * @author Rodrigo
  */
 public class VisualizaImagem {
