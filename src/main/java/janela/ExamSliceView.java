@@ -45,16 +45,8 @@ public class ExamSliceView extends JComponent {
     }
 
     @Override
-    public Dimension getPreferredSize() {
-        if (slice == null) {
-            return new Dimension(512, 512);
-        }
-        return slice.getExam().getSize();
-    }
-
-    @Override
     protected void paintComponent(Graphics g) {
-        Graphics2D g2d = (Graphics2D) g.create();
+        Graphics2D g2d = (Graphics2D) g;
         if (slice != null) {
             paintExam(g2d);
             paintStructures(g2d);
@@ -68,9 +60,18 @@ public class ExamSliceView extends JComponent {
      * @param g2d
      */
     private void paintExam(Graphics2D g2d) {
-        g2d.drawImage(slice.getExam().getBufferedImageWithWLWW(wl, ww), 0, 0, this);
+        g2d.drawImage(getExamImage(), 0, 0, this);
     }
 
+    /**
+     * Returns the exam image
+     * 
+     * @return BufferedImage
+     */
+    protected BufferedImage getExamImage() {
+        return slice.getExam().getBufferedImageWithWLWW(wl, ww);
+    }
+    
     /**
      * Draws the structures
      *

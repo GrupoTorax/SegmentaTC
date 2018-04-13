@@ -2,7 +2,6 @@ package janela;
 
 import gabaritos.TemplateManager;
 import java.awt.BorderLayout;
-import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -77,8 +76,9 @@ public class View {
 
     public void exibe() {
         janela = new JFrame();
-        janela.setTitle("Ferramenta para apoio ao diagnóstico em imagens de TC do tórax");
+        janela.setTitle("Ferramenta para apoio ao diagnóstico em imagens de TC");
         janela.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        janela.setExtendedState(JFrame.MAXIMIZED_BOTH);
         janela.setBounds(1, 1, 774, 665);
         janela.setLocationRelativeTo(null);
         janela.setLayout(new BorderLayout());
@@ -89,7 +89,7 @@ public class View {
         painelImagem = new JPanel(new BorderLayout());
         //painel central, contem o painel com a imagem e com as informacoes
         painelCentral = new JPanel(new BorderLayout());
-        painelCentral.add(painelImagem, BorderLayout.WEST);
+        painelCentral.add(painelImagem);
         //painel do rodape, contem os campos do rodape da janela
         JPanel bottomPanel = new JPanel(new BorderLayout());
         painelRodape = new JPanel();
@@ -102,9 +102,7 @@ public class View {
         painelPrincipal.add(bottomPanel, BorderLayout.SOUTH);
         //adiciona o painel principal no painel do frame
         janela.getContentPane().add(painelPrincipal, BorderLayout.CENTER);
-
         criaRodape();
-
         slider = new JSlider(JSlider.VERTICAL, 0, 10, 0);
         slider.setInverted(true);
         slider.setToolTipText("Seleciona a fatia do exame que será utilizada");
@@ -114,10 +112,7 @@ public class View {
             atualizaImagem();
         });
         janela.getContentPane().add(slider, BorderLayout.WEST);
-
-        sliceCorrente = new ExamSliceView(null, (type) -> selected.contains(type), getWL(), getWW());
-
-        sliceCorrente.setPreferredSize(new Dimension(512, 512));
+        sliceCorrente = new ExamSliceViewZoom(null, (type) -> selected.contains(type), getWL(), getWW());
         sliceCorrente.addMouseMotionListener(new MouseMotionListener() {
             @Override
             public void mouseDragged(MouseEvent e) {
@@ -128,10 +123,9 @@ public class View {
                 atualizaCoordenadas(e.getX(), e.getY());
             }
         });
-        painelImagem.add(sliceCorrente);
-
+        JScrollPane scrollPane = new JScrollPane(sliceCorrente);
+        painelImagem.add(scrollPane);
         criaInformacoes();
-
         janela.pack();
         janela.setVisible(true);
     }
@@ -332,7 +326,7 @@ public class View {
         //atualiza as infromações do pixel selecionado
         labelCoordenadas.setText("  Coordenadas: " + x + ", " + y);
         //MELHORAR ESTE PONTO, A FORMA COMO OBTEM OS DADOS!
-        labelHU.setText("  Valor em HU: " + controller.dados.getMatrizOriginal(getValorSlider())[x][y]);
+//        labelHU.setText("  Valor em HU: " + controller.dados.getMatrizOriginal(getValorSlider())[x][y]);
 
 //        BufferedImage imagem = new BufferedImage(sliceCorrente.getIcon().getIconWidth(),
 //                sliceCorrente.getIcon().getIconHeight(),
